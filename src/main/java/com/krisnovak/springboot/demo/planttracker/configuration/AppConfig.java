@@ -37,7 +37,7 @@ public class AppConfig {
     /**
      * Function that sends an email reminder to any user with a plant overdue to be watered
      */
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     private void sendEmailReminder(){
         //Retrieve all plants from the database
         List<Plant> allPlants = plantTrackerDAO.findAllPlants();

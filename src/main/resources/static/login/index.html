@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en-US">
+    <head>
+        <meta charset="utf-8" />
+        <title>BotaniClock</title>
+        <link rel="stylesheet" href="/login/style.css">
+        <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900" rel="stylesheet">
+        <script src="/login/cookie.js"></script>
+        <script src="/login/script.js" defer></script>
+    </head>
+    <body>
+        <div class="container">
+                <header class="header">
+                    <h1 class="header__title">
+                        BotaniClock
+                    </h1>
+                    <nav class="nav">
+                        <a href="/" class="button button--back">Back</a>
+                    </nav>
+                </header>
+                <section class="login-box">
+                    <h2 class="login-box__title">Login</h2>
+                    <p class="login-box__error-area" id="login-box__error-area">You have entered an invalid email/password. Please try again.</p>
+                    <form class="login-box__form">
+                        <input class="login-box__form__email" type="email" placeholder="Email" name="email"></input>
+                        <input class="login-box__form__password" type="password" placeholder="Password" name="password"></input>
+                        <input class="login-box__form__submit" type="submit" value="Log In"></input>
+                    </form>
+                    <a href="/signup" class="login-box__signup-area">New? Sign up here</a>
+                </section>
+        </div>
+    </body>
+</html>

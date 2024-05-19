@@ -1,0 +1,268 @@
+*,*::after,*:before{
+    margin:0;
+    padding:0;
+    box-sizing: inherit;
+}
+
+html{
+    font-size: 62.5%;
+    
+}
+
+body{
+    background-color:rgb(255, 255, 255);
+    font-family: "Lato",sans-serif;
+    font-weight: 400;
+    background-image: linear-gradient(to right bottom, #ffffff 40%, #1c8d26);
+    background-attachment: fixed;
+    box-sizing:border-box;
+    
+}
+
+.header{
+    display:block;
+    position:absolute;
+    height: 5rem;
+    width:98%;
+    left:1%;
+    top:1rem;
+    background-color: white;
+    color:#1c8d26;
+    border: .3rem solid;
+    border-radius: 1rem;
+    border-color: black;
+}
+
+.header__title{
+    position:absolute;
+    display:inline-block;
+    margin:0;
+    padding:0;
+    top:50%;
+    transform:translateY(-50%);
+    left:3rem;
+    font-size: 2.5rem;
+}
+
+.button--back:visited, .button--back:link{
+    position:absolute;
+    display:inline-block;
+    border: .3rem solid;
+    border-color:black;
+    background-color:#1c8d26;
+    color:white;
+    border-radius:1rem;
+    right:3rem;
+    font-size: 2rem;
+    text-align:center;
+    top:50%;
+    transform:translateY(-50%);
+    padding:.5rem;
+    text-decoration:none;
+
+}
+
+.plant-box{
+    position:absolute;
+    left:50%;
+    width:92rem;
+    height:30rem;
+    transform:translateX(-50%);
+    top: 10rem;
+    background-color:#1c8d26;
+    color:white;
+    border: .3rem solid;
+    border-color:black;
+    border-radius:1rem;
+    text-align:left;
+}
+
+.plant-box__image-box__input{
+    display:none;
+}
+
+.plant-box__image-box{
+    position:absolute;
+    background-color:rgb(255, 255, 255);
+    left:1rem;
+    top:50%;
+    transform: translateY(-50%);
+    height:28rem;
+    width:28rem;
+    border-radius:1rem;
+}
+
+.plant-box__image-box__image{
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    border: .3rem solid;
+    border-color:black;
+    border-radius:1rem;
+}
+
+/* need to make the size of the text customizable depending on how long it is*/
+.plant-box__heading
+{
+    position:absolute;
+    left:32rem;
+    font-size: 3rem;
+    color:white;
+    font-weight: 400;
+
+}
+
+.plant-box__name{
+    top: 1rem;
+    width: 11rem;
+    display: block;
+}
+
+.plant-box__date-last-watered{
+    top: 6.5rem;
+    width: 28rem;
+    display: block;
+}
+
+.plant-box__water-how-often{
+    top: 12rem;
+    width: 27rem;
+    display: block;
+}
+
+.plant-box__next-watering-date{
+    top: 17.5rem;
+    width: 30rem;
+    display: block;
+}
+
+.plant-box__registration-id{
+    top: 23rem;
+    width: 23rem;
+    display: block;
+}
+
+.plant-box__entry
+{
+    position:absolute;
+    font-size: 3rem;
+    color:white;
+    font-weight: 400;
+    padding: 0rem 1rem;
+
+}
+
+.plant-box__name__entry{
+    top: 1rem;
+    left: 41rem;
+}
+
+.plant-box__date-last-watered__entry{
+    top: 6.5rem;
+    left: 58rem;
+}
+
+.plant-box__water-how-often__entry{
+    top: 12rem;
+    left: 57rem;
+}
+
+.plant-box__next-watering-date__entry{
+    top:17.5rem;
+    left: 53rem;
+}
+
+.plant-box__registration-id__entry{
+    top: 23rem;
+    left: 53rem;
+    font-size: 2.5rem;
+}
+
+.button{
+    position:absolute;
+    display:inline-block;
+    border: .3rem solid;
+    border-color:black;
+    background-color:#1c8d26;
+    color:white;
+    border-radius:1rem;
+    font-size: 2rem;
+    text-align:center;
+    padding:.5rem;
+    width:10rem;
+    height:5rem;
+    text-decoration:none;
+    cursor:pointer;
+    top:42rem;
+}
+
+.button--delete{
+    top: 42rem;
+    left: calc(50% - 46rem);
+}
+
+.button--register{
+    right: calc(50% - 35rem);
+
+}
+
+.button--edit{
+    right: calc(50% - 46rem);
+    display: block;
+}
+
+.button--done{
+    right:calc(50% - 46rem);
+    top:31.7rem;
+    display:none;
+}
+
+.edit-form__entry{
+    position:absolute;
+    font-size: 3rem;
+    display:block;
+    color:#1c8d26;
+    background-color:white;
+    border: .3rem solid black;
+    border-radius:1rem;
+    padding: 0rem 1rem;
+}
+
+.edit-form__name{
+    top: 1rem;
+    left: 42rem;
+    width:45rem;
+    display:none;
+}
+
+.edit-form__date-last-watered{
+    top: 6.5rem;
+    left: 59rem;
+    width: 25rem;
+    display:none;
+}
+
+.edit-form__water-how-often{
+    top: 12rem;
+    left: 73.5rem;
+    width: 8rem;
+    display:none;
+}
+
+.edit-form__text--once-every{
+    position:absolute;
+    font-size: 3rem;
+    display:none;
+    color:white;
+    left: 58rem;
+    top: 12rem;
+}
+
+.edit-form__text--days{
+    position:absolute;
+    font-size: 3rem;
+    display:none;
+    color:white;
+    left: 82rem;
+    top: 12rem;
+}

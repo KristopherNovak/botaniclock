@@ -1,0 +1,223 @@
+*,*::after,*:before{
+    margin:0;
+    padding:0;
+    box-sizing: inherit;
+}
+
+html{
+    font-size: 100%;
+}
+
+body{
+    background-color:rgb(255, 255, 255);
+    font-family: "Lato",sans-serif;
+    font-weight: 400;
+    background-image: linear-gradient(to right bottom, #ffffff 40%, #1c8d26);
+    background-attachment: fixed;
+    box-sizing:border-box;
+}
+  
+.container{
+    display:grid;
+    height:200vh;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 2fr 2fr 2fr .25fr;
+    grid-template-areas:
+      "header header header"
+      "text-box-first text-box-first image-box-first"
+      "image-box-second text-box-second text-box-second"
+      "contact-box contact-box contact-box";
+    gap: 1rem;
+    margin: 2rem;
+
+}
+
+.header{
+    grid-area: header;
+    position: relative;
+    border: .3rem solid;
+    border-radius:1rem;
+    color:black;
+    text-align: center;
+    background-image: url(/img/Creek_Bed.jpg);
+    background-size: cover;
+    background-position: top;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    word-wrap: break-word;
+
+}
+
+.header__title-box{
+    height:15rem;
+    width:100%;
+}
+  
+.header__title-box__title{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    font-size: 7rem;
+    background-color:rgb(255, 255, 255,.3);
+    width:100%;
+}
+
+.button{
+    text-decoration:none;
+}
+
+.button--header{
+    padding: .5rem 1rem;
+    border:.1rem solid;
+    color:#1c8d26;
+    border-color: black;
+    border-radius:1rem;
+    background-color: white;
+}
+  
+.signup-button--header{
+    position: absolute;
+    bottom:.5rem;
+    right:7.5rem;
+}
+  
+.login-button--header{
+    position: absolute;
+    bottom:.5rem;
+    right:1.8rem;
+}
+
+.text-box{
+    position: relative;
+    border: .3rem solid;
+    border-radius:1rem;
+    background-color:white;
+    border-color:black;
+    display: flex;
+    flex-direction: column;
+    word-wrap: break-word;
+    text-align: center;
+}
+
+.text-box__title{
+    font-size: 4rem;
+    color:#1c8d26;
+    margin:1rem;
+}
+
+.text-box__content{
+    font-size: 2.5rem;
+    margin:1rem;
+    color:black;
+}
+
+.text-box-first{
+    grid-area: text-box-first;
+}
+
+.text-box-second{
+    grid-area: text-box-second;
+}
+
+.image-box{
+    position: relative;
+    border: .3rem solid;
+    border-radius:1rem;
+    background-color:white;
+    color:#1c8d26;
+    border-color:black;
+}
+
+.image-box-first{
+    grid-area: image-box-first;
+    background-image: url(/img/Plant_On_Tree.jpg);
+    background-size: cover;
+    background-position: center;
+}
+
+.image-box-second{
+    grid-area: image-box-second;
+    background-image: url(/img/Desert_Plant.jpg);
+    background-size: cover;
+    background-position: center;
+}
+  
+.contact-box{
+    grid-area: contact-box;
+    border: .3rem solid;
+    border-radius:1rem;
+    background-color:white;
+    color:#1c8d26;
+    border-color:black;
+    text-align:center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-wrap:wrap;
+}
+
+.contact-box__text{
+    font-size: 1rem;
+}
+
+@media only screen and (max-width:788px){
+    .container{
+        height:400vh;
+        grid-template-columns:1fr;
+        grid-template-rows: 2fr 1fr 2fr 1fr 2fr .25fr;
+        grid-template-areas:
+        "header"
+        "text-box-first"
+        "image-box-first"
+        "text-box-second"
+        "image-box-second"
+        "contact-box";
+    }
+
+    .header__title-box{
+        height:25rem;
+    }
+
+    .header__title-box__title{
+        font-size: 5rem;
+    }
+
+    .text-box__title{
+        font-size: 3rem;
+    }
+    
+    .text-box__content{
+        font-size: 2rem;
+    }
+}
+
+@media only screen and (max-width: 531px){
+    .container{
+        height:300vh;
+        grid-template-columns:1fr;
+        grid-template-rows: 2fr 1fr 2fr 1fr 2fr .25fr;
+        grid-template-areas:
+        "header"
+        "text-box-first"
+        "image-box-first"
+        "text-box-second"
+        "image-box-second"
+        "contact-box";
+    }
+    
+    .header__title-box__title{
+        font-size: 3rem;
+    }
+
+    .text-box__title{
+        font-size: 2rem;
+    }
+    
+    .text-box__content{
+        font-size: 1.25rem;
+    }
+}

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en-US">
+    <head>
+        <meta charset="utf-8" />
+        <title>BotaniClock</title>
+        <link rel="stylesheet" href="/myplants/plantInfo/style12.css">
+        <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900" rel="stylesheet">
+        <script src="/myplants/plantInfo/cookie.js"></script>
+        <script src="/myplants/plantInfo/script16.js" defer></script>
+    </head>
+    <body>
+        <div class="container">
+            <header class="header">
+                <h1 class="header__title">
+                    BotaniClock
+                </h1>
+                <nav class="nav">
+                    <a href="/myplants" class="button--back">Back</a>
+                </nav>
+            </header>
+
+            <section class="plant-box plant-box-display">
+
+                <label class="plant-box__image-box" for="file-input">
+                      <img class="plant-box__image-box__image" src="" alt="">
+                </label>
+                <input id="file-input" class="plant-box__image-box__input" type="file" />
+
+                <h2 class="plant-box__name plant-box__heading"><strong>Name: </strong></h2>
+                <p class="plant-box__name__entry plant-box__entry"></p>
+
+                <h2 class="plant-box__date-last-watered plant-box__heading"><strong>Date Last Watered: </strong></h2>
+                <p class="plant-box__date-last-watered__entry plant-box__entry"></p>
+
+                <h2 class="plant-box__water-how-often plant-box__heading"><strong>Water How Often: </strong></h2>
+                <p class="plant-box__water-how-often__entry plant-box__entry"></p>
+
+                <h2 class="plant-box__next-watering-date plant-box__heading"><strong>Next Reminder: </strong></h2>
+                <p class="plant-box__next-watering-date__entry plant-box__entry"></p>
+
+                <h2 class="plant-box__registration-id plant-box__heading"><strong>Registration ID: </strong></h2>
+                <p class="plant-box__registration-id__entry plant-box__entry"></p>
+
+
+                <form class="edit-form">
+                    <input class="edit-form__entry edit-form__name" type="text" placeholder=" Less than 25 characters" name="name"></input>
+                    <input class="edit-form__entry edit-form__date-last-watered" type="date" placeholder="dd/mm/yyyy" name="date"></input>
+                    <p class="edit-form__text--once-every">Once every</p>
+                    <input class="edit-form__entry edit-form__water-how-often" type="text" placeholder="" name="days"></input>
+                    <p class="edit-form__text--days">days</p>
+                    <input class="edit-form__submit button button--done" type="submit" value="Done"></input>
+                </form>
+            </section>
+
+            <button type="button" class="button button--delete">Delete</button>
+            <button type="button" class="button button--register">Register</button>
+            <button type="button" class="button button--edit">Edit</button>
+
+        </div>
+    </body>
+</html>

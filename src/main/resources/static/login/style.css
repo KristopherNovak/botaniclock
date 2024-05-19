@@ -1,0 +1,149 @@
+*,*::after,*:before{
+    margin:0;
+    padding:0;
+    box-sizing: inherit;
+}
+
+html{
+    font-size: 62.5%;
+    
+}
+
+body{
+    background-color:rgb(255, 255, 255);
+    font-family: "Lato",sans-serif;
+    font-weight: 400;
+    background-image: linear-gradient(to right bottom, #ffffff 40%, #1c8d26);
+    background-attachment: fixed;
+    box-sizing:border-box;
+    
+}
+
+.header{
+    display:block;
+    position:absolute;
+    height: 5rem;
+    width:98%;
+    left:1%;
+    top:1rem;
+    background-color: white;
+    color:#1c8d26;
+    border: .3rem solid;
+    border-radius: 1rem;
+    border-color: black;
+}
+
+.header__title{
+    position:absolute;
+    display:inline-block;
+    margin:0;
+    padding:0;
+    top:50%;
+    transform:translateY(-50%);
+    left:3rem;
+    font-size: 2.5rem;
+}
+
+.button--back:visited, .button--back:link{
+    position:absolute;
+    display:inline-block;
+    border: .3rem solid;
+    border-color:black;
+    background-color:#1c8d26;
+    color:white;
+    border-radius:1rem;
+    right:3rem;
+    font-size: 2rem;
+    text-align:center;
+    top:50%;
+    transform:translateY(-50%);
+    padding:.5rem;
+    text-decoration:none;
+
+}
+
+.login-box{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    top: 15rem;
+    height:20rem;
+    width:30rem;
+    display:inline-block;
+    border: .3rem solid;
+    border-color:black;
+    background-color:#1c8d26;
+    background-color:white;
+    color:green;
+    border-radius:1rem;
+
+}
+
+.login-box__title{
+    position:absolute;
+    top: 1rem;
+    left: 1rem;
+    font-size:2rem;
+}
+
+.login-box__error-area{
+    position:absolute;
+    top:3.2rem;
+    left:1rem;
+    padding:0;
+    margin:0;
+    font-size:1.5rem;
+    color:red;
+    display:none;
+}
+
+.login-box__form{
+    position:absolute;
+    display:block;
+    top:3rem;
+    left:0rem;
+    height:17rem;
+    width:30rem;
+}
+
+.login-box__form__submit{
+    position:absolute;
+    bottom:1rem;
+    right:1rem;
+    border: .3rem solid;
+    border-color:black;
+    background-color:#1c8d26;
+    color:white;
+    height:4rem;
+    width:8rem;
+    font-size: 1.5rem;
+    border-radius:1rem;
+    cursor:pointer;
+}
+
+.login-box__form__email{
+    position:absolute;
+    left:1rem;
+    top:4.2rem;
+    width:27rem;
+    height:2rem;
+    font-size:1.5rem;
+}
+.login-box__form__password{
+    position:absolute;
+    left:1rem;
+    top:8rem;
+    width:27rem;
+    height:2rem;
+    font-size:1.5rem;
+}
+
+.login-box__signup-area:visited, .login-box__signup-area:link{
+    position:absolute;
+    display:inline-block;
+    top: 14rem;
+    left: 1rem;
+    font-size:1.5rem;
+    color:blue;
+}
+

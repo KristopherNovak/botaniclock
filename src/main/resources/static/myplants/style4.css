@@ -1,0 +1,215 @@
+*,*::after,*:before{
+    margin:0;
+    padding:0;
+    box-sizing: inherit;
+}
+
+html{
+    font-size: 62.5%;
+}
+
+body{
+    background-color:rgb(255, 255, 255);
+    font-family: "Lato",sans-serif;
+    font-weight: 400;
+    background-image: linear-gradient(to right bottom, #ffffff 40%, #1c8d26);
+    background-attachment: fixed;
+    box-sizing: border-box;
+}
+
+.button--menu{
+    position:absolute;
+    display:inline-block;
+    border: .3rem solid;
+    border-color:black;
+    background-color:#1c8d26;
+    color:white;
+    border-radius:1rem;
+    right:3rem;
+    font-size: 2rem;
+    text-align:center;
+    top:2rem;
+    padding:.5rem;
+    width:10rem;
+    height:5rem;
+    text-decoration:none;
+    cursor:pointer;
+}
+
+.settings-box{
+    position:absolute;
+    background-color:red;
+    top:6.7rem;
+    right:3rem;
+    height:11rem;
+    width:10rem;
+    border: .3rem solid;
+    border-color:black;
+    background-color:white;
+    border-radius:1rem;
+    text-align:center;
+    z-index:1;
+    display:none;
+}
+
+.button--menu__button:visited, .button--menu__button:link{
+    font-size:2rem;
+    text-decoration:none;
+    display:inline-block;
+    position:absolute;
+    left:50%;
+    width:98%;
+    transform:translateX(-50%);
+    color:#1c8d26;
+}
+
+.button--settings{
+    top:0rem;
+    height: 5rem;
+}
+
+.button--settings__text{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:100%;
+}
+
+.button--logout{
+    top:5rem;
+    height:5rem;
+    border-top: .3rem black solid;
+}
+
+.button--logout__text{
+    position:absolute;
+    width:100%;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+}
+
+
+.title_box__title{
+    position:absolute;
+    left:50%;
+    width:40rem;
+    height:9rem;
+    top: 9rem;
+    transform:translateX(-50%);
+    font-size: 7rem;
+    background-color:white;
+    color:#1c8d26;
+    border: .3rem solid;
+    border-color:black;
+    border-radius:1rem;
+    text-align:center;
+}
+
+.add-box{
+    position: absolute;
+    left:50%;
+    transform:translateX(-50%);
+    top:21rem;
+    cursor:pointer;
+}
+
+.add-box__plus{
+    position: relative;
+    --b: .4rem; /* the thickness */
+    width: 4rem; /* the size */
+    aspect-ratio: 1;
+    border: 1rem solid #1c8d26; /* the outer space */
+    background:
+      conic-gradient(from 90deg at var(--b) var(--b),#1c8d26 90deg,#fff 0) 
+      calc(100% + var(--b)/2) calc(100% + var(--b)/2)/
+      calc(50%  + var(--b))   calc(50%  + var(--b));
+    display: inline-block;
+  }
+
+.add-box__plus::before{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    height:5rem;
+    width:5rem;
+    border:.3rem black solid;
+    background-color:green;
+    border-radius: 1rem;
+    z-index: -1;
+  }
+
+/* need to leave the top property undefined until generated in javascript */
+.plant-box{
+    position:absolute;
+    left:50%;
+    width:50rem;
+    height:15rem;
+    transform:translateX(-50%);
+    background-color:#1c8d26;
+    color:white;
+    border: .3rem solid;
+    border-color:black;
+    border-radius:1rem;
+    text-align:center;
+    cursor:pointer;
+}
+
+.plant-box__image-box{
+    position:absolute;
+    background-color:white;
+    left:1rem;
+    top:50%;
+    transform: translateY(-50%);
+    height:13rem;
+    width:13rem;
+    border-radius:1rem;
+}
+
+.plant-box__image-box__image{
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    border: .3rem solid;
+    border-color:black;
+    border-radius:1rem;
+}
+
+/* need to make the size of the text customizable depending on how long it is*/
+.plant-box__name{
+    position:absolute;
+    left:31.5rem;
+    transform:translateX(-50%);
+    top: 1rem;
+    font-size: 3rem;
+    width: 35rem;
+}
+
+.plant-box__last-watering-date{
+    position:absolute;
+    left:31.5rem;
+    transform:translateX(-50%);
+    top: 5.5rem;
+    font-size: 2rem;
+    width: 35rem;
+}
+
+.plant-box__next-watering-date{
+    position:absolute;
+    left:31.5rem;
+    transform:translateX(-50%);
+    top: 9.5rem;
+    font-size: 2rem;
+    width: 35rem;
+}
+
+@media only screen and (max-width: 531px){
+    html{
+        font-size: 45%;
+    }
+}
+
+

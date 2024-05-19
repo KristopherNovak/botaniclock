@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en-US">
+    <head>
+        <meta charset="utf-8" />
+        <title>BotaniClock</title>
+        <link rel="stylesheet" href="/myplants/settings/style2.css">
+        <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900" rel="stylesheet">
+        <script src="/myplants/settings/cookie.js"></script>
+        <script src="/myplants/settings/script4.js" defer></script>
+    </head>
+    <body>
+        <div class="container">
+            <header class="header">
+                <h1 class="header__title">
+                    BotaniClock
+                </h1>
+                <nav class="nav">
+                    <a href="/myplants" class="button button--back">Back</a>
+                </nav>
+            </header>
+
+            <section class="change-password-box password-box">
+                <h2 class="password-box__title">Change Password</h2>
+                <div id="change-password-box__error-area" class="change-password-box__error-area password-box__error-area"></div>
+                <form class="change-password-box__form password-box__form">
+                    <input class="change-password-box__form__email" type="email" placeholder="Email" name="email"></input>
+                    <input class="change-password-box__form__password--current" type="password" placeholder="Current Password" name="password_current"></input>
+                    <input class="change-password-box__form__password--new" type="password" placeholder="New Password" name="password_new"></input>
+                    <input class="change-password-box__form__submit" type="submit" value="Change Password"></input>
+                </form>
+            </section>
+
+            <section class="delete-account-box password-box">
+                <h2 class="password-box__title">Delete Account</h2>
+                <div id="delete-account-box__error-area" class="delete-account-box__error-area password-box__error-area"></div>
+                <form class="delete-account-box__form password-box__form">
+                    <input class="delete-account-box__form__email" type="email" placeholder="Email" name="email"></input>
+                    <input class="delete-account-box__form__password" type="password" placeholder="Password" name="password"></input>
+                    <input class="delete-account-box__form__submit" type="submit" value="Delete Account"></input>
+                </form>
+            </section>
+        </div>
+    </body>
+</html>

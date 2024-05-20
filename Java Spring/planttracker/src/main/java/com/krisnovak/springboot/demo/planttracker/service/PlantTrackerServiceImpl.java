@@ -26,7 +26,7 @@ public class PlantTrackerServiceImpl implements PlantTrackerService{
     private S3Bucket s3Bucket;
 
     //S3 Properties File Path
-    private final static String s3PropertiesFilePath = "../../credentials.properties";
+    private final static String s3PropertiesFilePath = "../../../credentials.properties";
 
     @Autowired
     public PlantTrackerServiceImpl(PlantTrackerDAO thePlantTrackerDAO){

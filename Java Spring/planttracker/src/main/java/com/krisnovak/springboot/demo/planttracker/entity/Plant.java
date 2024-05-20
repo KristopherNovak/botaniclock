@@ -54,10 +54,6 @@ public class Plant {
     @JsonProperty("registrationID")
     private String registrationID;
 
-    @Transient
-    @JsonProperty("image")
-    private File image;
-
     @Column(name="image_key")
     private String imageKey;
 
@@ -131,12 +127,6 @@ public class Plant {
         return account;
     }
     private void setAccount(Account theAccount){this.account = theAccount;}
-
-    public File getImage() {return image;}
-
-    public void setImage(File image) {
-        this.image = image;
-    }
 
     public String getImageKey() {
         return imageKey;

@@ -111,7 +111,7 @@ public class AppConfig {
         //Grab the credentials of the email address used to send the message
         Properties emailProperties = new Properties();
         try{
-            emailProperties.load(new FileReader("../../email.properties"));
+            emailProperties.load(new FileReader("../../../email.properties"));
         } catch(IOException e){
             throw new RuntimeException("File could not be found");
         }

@@ -6,6 +6,7 @@ import com.krisnovak.springboot.demo.planttracker.service.S3Bucket;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -41,10 +42,6 @@ public class PlantTrackerPlantTests {
     @Mock
     private S3Bucket mockS3Bucket;
 
-    @Mock
-    private BufferedImage mockImage;
-
-
     //Tests for new Plant(String sessionID, PlantTrackerDAO, plantTrackerDAO)
     @Test
     public void Plant_newPlant_returnsValidNewPlant(){
@@ -70,7 +67,6 @@ public class PlantTrackerPlantTests {
         Assertions.assertEquals(fakeAccount, thePlant.getAccount());
         Assertions.assertEquals(thePlant.getRegistrationID().length(), Plant.MAXIMUM_REGISTRATION_ID_LENGTH);
         Assertions.assertNull(thePlant.getImageKey());
-        Assertions.assertNull(thePlant.getImage());
         Assertions.assertNull(thePlant.getImageURL());
     }
 
@@ -303,18 +299,67 @@ public class PlantTrackerPlantTests {
 
 
     //Tests for generateAndSetImageKey(BufferedImage image, S3Bucket s3Bucket)
-    //TODO: Write the rest of the test (need to probably use a real image because of resizeImage
     @Test
     public void Plant_generateAndSetImageKey_ReturnsAndSetsImageKey() throws IOException {
 
         String fakeSessionID = "fakeSessionID";
+        BufferedImage image = new BufferedImage(1,1, BufferedImage.TYPE_INT_RGB);
 
         when(Session.managedInstance(fakeSessionID, plantTrackerDAO)).thenReturn(mockSession);
         when(mockSession.getAccount()).thenReturn(mockAccount);
         Plant newPlant = new Plant(fakeSessionID, plantTrackerDAO);
 
-        String newImageKey = newPlant.generateAndSetImageKey(mockImage, mockS3Bucket);
+        String fakeKey = "fakeKey";
+        when(mockS3Bucket.addImage(image)).thenReturn(fakeKey);
+        String newImageKey = newPlant.generateAndSetImageKey(image, mockS3Bucket);
 
+        Assertions.assertEquals(fakeKey, newImageKey);
+        Assertions.assertEquals(newPlant.getImageKey(), fakeKey);
+
+    }
+
+    //Tests for resizeImageIfTooLarge
+    @Test
+    public void Plant_resizeImageIfTooLarge_ReturnsSameImage() throws IOException {
+        String fakeSessionID = "fakeSessionID";
+        BufferedImage image = new BufferedImage(1,1, BufferedImage.TYPE_INT_RGB);
+        int imageHeight = image.getHeight();
+        int imageWidth = image.getWidth();
+        int imageType = image.getType();
+
+        Object[] argObjects = new Object[1];
+        argObjects[0] = image;
+
+        BufferedImage result = (BufferedImage) Reflector.invokeMethod(mockPlant, "resizeImageIfTooLarge", argObjects);
+        Assertions.assertSame(image, result);
+        Assertions.assertEquals(imageHeight, result.getHeight());
+        Assertions.assertEquals(imageWidth, result.getWidth());
+        Assertions.assertEquals(imageType, result.getType());
+    }
+
+    @Test
+    public void Plant_resizeImageIfTooLarge_ReturnsDifferentSmallerImage() throws IOException {
+        String fakeSessionID = "fakeSessionID";
+
+        Integer maxImageSize = (Integer) Reflector.getField(mockPlant, "MAX_IMAGE_RESOLUTION");
+
+        BufferedImage image = new BufferedImage(maxImageSize*10, maxImageSize*10, BufferedImage.TYPE_INT_RGB);
+        int imageHeight = image.getHeight();
+        int imageWidth = image.getWidth();
+        int imageType = image.getType();
+
+        Object[] argObjects = new Object[1];
+        argObjects[0] = image;
+
+        BufferedImage result = (BufferedImage) Reflector.invokeMethod(mockPlant, "resizeImageIfTooLarge", argObjects);
+
+
+        Assertions.assertNotSame(image, result);
+        Assertions.assertTrue(imageHeight > result.getHeight());
+        Assertions.assertTrue(imageWidth > result.getWidth());
+        Assertions.assertEquals(imageType, image.getType());
+        Assertions.assertNotEquals(result.getHeight(), 0);
+        Assertions.assertNotEquals(result.getWidth(), 0);
     }
 
 }

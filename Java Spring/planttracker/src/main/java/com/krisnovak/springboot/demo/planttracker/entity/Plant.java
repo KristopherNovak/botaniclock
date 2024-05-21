@@ -193,7 +193,7 @@ public class Plant {
         //Then verify that the provided plant ID exists
         Plant managedPlant;
         try {managedPlant = plantTrackerDAO.findPlantByPlantID(plantID);
-        } catch(EmptyResultDataAccessException e){
+        } catch(EmptyResultDataAccessException | NoResultException e){
             throw new InvalidPlantException("Plant with provided Plant ID does not exist");
         }
 
@@ -225,7 +225,7 @@ public class Plant {
         //Attempt to grab a managed plant using the provided registration ID
         Plant managedPlant;
         try{managedPlant = plantTrackerDAO.findPlantByRegistrationID(theDevice.getRegistrationID());
-        }catch(EmptyResultDataAccessException e){
+        }catch(EmptyResultDataAccessException | NoResultException e){
             throw new InvalidPlantException(errorMessage);
         }
 

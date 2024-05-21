@@ -126,7 +126,7 @@ public class Session {
      */
     public static Session managedInstance(String sessionID, PlantTrackerDAO plantTrackerDAO) throws InvalidSessionException {
         try{return plantTrackerDAO.findSessionBySessionID(sessionID);
-        }catch(EmptyResultDataAccessException e){
+        }catch(EmptyResultDataAccessException | NoResultException e){
             throw new InvalidSessionException("Session with the provided ID not located in the database");
         }
     }

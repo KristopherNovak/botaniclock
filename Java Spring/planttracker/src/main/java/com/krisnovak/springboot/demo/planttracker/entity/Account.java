@@ -164,7 +164,7 @@ public class Account {
      */
     public static Account managedInstance(Account theAccount, PlantTrackerDAO plantTrackerDAO) throws InvalidAccountException {
         try{return plantTrackerDAO.findAccount(theAccount);
-        }catch(EmptyResultDataAccessException e){
+        }catch(EmptyResultDataAccessException | NoResultException e){
             throw new InvalidAccountException("Account with the provided credentials not located in the database");
         }
     }

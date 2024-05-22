@@ -1,4 +1,4 @@
-# botaniclock
+# BotaniClock
 Repository including the code for BotaniClock.
 
 ## Demo

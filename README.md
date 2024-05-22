@@ -1,11 +1,6 @@
 # BotaniClock
 Repository including the code for BotaniClock.
 
-## Demo
-Below is a link to a demo of BotaniClock in action:
-
-[![BotaniClock](https://img.youtube.com/vi/z_e8bmMwRhs/0.jpg)](https://www.youtube.com/watch?v=z_e8bmMwRhs)
-
 ## What Is BotaniClock
 BotaniClock is a web app that allows a user to more easily track when they should water their plants. At a high level, it's a service that notifies a user via email the next time a plant needs to be checked for watering. However, instead of requiring a user to go online each time they need to let the service know the plant has been watered, they can much more simply send that information to the server with the click of a single button on a device by the plant.
 
@@ -18,3 +13,8 @@ Finally, whenever the user waters the plant, they'll press the button on the dev
 
 ## How Is It Implemented
 In this case, the backend server is run on Java Spring, the device is an ESP32 using C code loaded via ESP-IDF, the database is PostgreSQL, and the images are stored in an S3 bucket. The Java Spring code can be found in folder labeled "Java Spring" and the ESP32 code (once it is uploaded to the site) will be found in a folder labeled "ESP32 code."
+
+## Demo
+Below is a link to a demo of BotaniClock in action:
+
+[![BotaniClock](https://img.youtube.com/vi/z_e8bmMwRhs/0.jpg)](https://www.youtube.com/watch?v=z_e8bmMwRhs)

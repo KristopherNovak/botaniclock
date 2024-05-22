@@ -135,6 +135,16 @@ public class Account {
         }
     }
 
+    public Session removeSession(Session theSession){
+        for(Session s : sessions){
+            if(s.getSessionID().equals(theSession.getSessionID())){
+                sessions.remove(s);
+            }
+        }
+
+        return theSession;
+    }
+
     public List<Plant> getPlants() {
         return plants;
     }

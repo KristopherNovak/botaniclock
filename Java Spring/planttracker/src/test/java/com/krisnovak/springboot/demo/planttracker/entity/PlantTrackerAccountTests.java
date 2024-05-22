@@ -80,6 +80,26 @@ public class PlantTrackerAccountTests {
 
     }
 
+    //Tests for removeSession
+    @Test
+    public void Account_removeSession_returnsAccountWithSessionRemoved(){
+        Account theAccount = new Account("test", "password");
+
+        List<Session> sessionList = new ArrayList<Session>();
+        sessionList.add(mockSession1);
+        sessionList.add(mockSession2);
+
+        theAccount.setSessions(sessionList);
+
+        when(mockSession1.getSessionID()).thenReturn("fakeSessionID");
+        when(mockSession2.getSessionID()).thenReturn("fakeSessionID2");
+        theAccount.removeSession(mockSession1);
+
+        Assertions.assertEquals(sessionList.size(), 1);
+        Assertions.assertEquals(sessionList.get(0).getSessionID(), "fakeSessionID2");
+
+    }
+
     @Test
     public void Account_managedInstance_returnsAccount(){
         Account theAccount = new Account("test", "password");

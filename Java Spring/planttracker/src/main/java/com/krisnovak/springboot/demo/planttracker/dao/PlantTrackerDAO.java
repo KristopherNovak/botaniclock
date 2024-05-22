@@ -108,11 +108,4 @@ public interface PlantTrackerDAO {
      */
     public Plant findPlantByRegistrationID(String registrationID);
 
-    /**
-     * Function that deletes a provided session
-     * @param theSession The session to delete from the database
-     * @return The provided session
-     */
-    public Session delete(Session theSession);
-
 }

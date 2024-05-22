@@ -142,7 +142,9 @@ public class PlantTrackerServiceImpl implements PlantTrackerService{
         //Retrieve account using the session ID and remove the session associated with the session ID from the account
         Session managedSession = Session.managedInstance(sessionID, plantTrackerDAO);
 
-        plantTrackerDAO.delete(managedSession);
+        Account managedAccount = managedSession.getAccount();
+
+        managedAccount.removeSession(managedSession);
 
         return Session.getExpiredCookie();
 

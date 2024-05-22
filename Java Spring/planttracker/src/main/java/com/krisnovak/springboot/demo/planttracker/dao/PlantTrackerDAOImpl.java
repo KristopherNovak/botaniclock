@@ -168,12 +168,4 @@ public class PlantTrackerDAOImpl implements PlantTrackerDAO{
 
     }
 
-    public Session delete(Session theSession){
-        //delete the session from the database
-        entityManager.remove(theSession);
-
-        //return back the deleted session
-        return theSession;
-    }
-
 }

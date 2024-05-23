@@ -65,7 +65,7 @@ public class PlantTrackerServiceImpl implements PlantTrackerService{
     @Transactional
     //changePassword changes an account password
     //If the password is changed, the passed in account should have a new currentPassword
-    public void changePassword(Account theAccount){
+    public Account changePassword(Account theAccount){
 
         String newPassword = theAccount.getPasswordNew();
 
@@ -76,12 +76,13 @@ public class PlantTrackerServiceImpl implements PlantTrackerService{
         //Set the current password to the new password
         managedAccount.setPasswordCurrent(newPassword);
 
+        return managedAccount;
+
     }
 
     @Override
     @Transactional
     //Deletes a provided account so long as the username and password are authenticated
-    //Returns a null account if successful
     public Account deleteAccount(Account theAccount){
 
         //Retrieve the account using the provided username

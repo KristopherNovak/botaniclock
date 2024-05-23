@@ -28,7 +28,7 @@ public interface PlantTrackerService {
      * @throws DataIntegrityViolationException Thrown if the account is a duplicate,
      * has a null passwordNew field or has a passwordNew field that is too long
      */
-    public void changePassword(Account theAccount);
+    public Account changePassword(Account theAccount);
 
     /**
      * Function that deletes an Account from the database

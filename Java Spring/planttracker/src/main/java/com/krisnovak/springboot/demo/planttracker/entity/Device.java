@@ -16,7 +16,7 @@ public class Device {
 
     //email associated with an account
     //TODO: Change jsonproperty to accountEmail when refactoring C code for device
-    @JsonProperty("accountUsername")
+    @JsonProperty("accountEmail")
     @Transient
     private String accountEmail;
 

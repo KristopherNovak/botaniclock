@@ -26,3 +26,5 @@ The server module is responsible for hosting a server to which HTTP requests can
 The update mode module includes the logic for what the device does in update mode (sending a notification to the server to update a plant timestamp).
 
 The wifi module is response for connecting and disconnecting from WiFi.
+
+As an important note, the operation of this device depends on the MDNS library, which may need to be added separately.

@@ -136,11 +136,16 @@ public class Account {
     }
 
     public Session removeSession(Session theSession){
-        for(Session s : sessions){
-            if(s.getSessionID().equals(theSession.getSessionID())){
-                sessions.remove(s);
+
+        int removeSessionIndex = -1;
+        for(int i = 0; i < sessions.size(); i++){
+            if(sessions.get(i).getSessionID().equals(theSession.getSessionID())){
+                removeSessionIndex = i;
+                break;
             }
         }
+
+        if(removeSessionIndex >= 0) sessions.remove(removeSessionIndex);
 
         return theSession;
     }

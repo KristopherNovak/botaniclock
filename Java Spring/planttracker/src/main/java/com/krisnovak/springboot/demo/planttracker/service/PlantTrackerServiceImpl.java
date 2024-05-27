@@ -55,9 +55,7 @@ public class PlantTrackerServiceImpl implements PlantTrackerService{
         Account newAccount = new Account(theAccount.getEmail(), theAccount.getPasswordNew());
 
         //Attempt to add the new account to the database
-        plantTrackerDAO.add(newAccount);
-
-        return newAccount;
+        return plantTrackerDAO.add(newAccount);
 
     }
 

@@ -3,6 +3,7 @@ package com.krisnovak.springboot.demo.planttracker.service;
 import com.krisnovak.springboot.demo.planttracker.Reflector;
 import com.krisnovak.springboot.demo.planttracker.dao.PlantTrackerDAO;
 import com.krisnovak.springboot.demo.planttracker.entity.*;
+import jakarta.persistence.NoResultException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseCookie;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,15 +40,12 @@ public class PlantTrackerServiceImplTests {
 
         Account newAccount = new Account("test", "password");
 
-        when(plantTrackerDAO.add(ArgumentMatchers.any(Account.class))).thenAnswer(i ->
-                {
-                    Account theAccount = (Account) i.getArguments()[0];
-                    Reflector.setField(theAccount, "id", 1);
-                    theAccount.setPasswordCurrent(theAccount.getPasswordNew());
-                    return theAccount;
-                });
-        Account signedUpAccount = plantTrackerService.signUp(newAccount);
+        Account managedAccount = new Account("test", "password");
+        Reflector.setField(managedAccount, "id", 1);
+        managedAccount.setPasswordCurrent(managedAccount.getPasswordNew());
 
+        when(plantTrackerDAO.add(ArgumentMatchers.any(Account.class))).thenReturn(managedAccount);
+        Account signedUpAccount = plantTrackerService.signUp(newAccount);
 
         Assertions.assertEquals(signedUpAccount.getId(), 1);
         Assertions.assertEquals("test", signedUpAccount.getEmail());
@@ -64,7 +63,7 @@ public class PlantTrackerServiceImplTests {
         Account managedAccount = new Account("test", "passwordOld");
         Reflector.setField(managedAccount, "id", 1);
 
-        when(Account.managedInstance(theAccount, plantTrackerDAO)).thenReturn(managedAccount);
+        when(plantTrackerDAO.findAccount(theAccount)).thenReturn(managedAccount);
 
         Account updatedAccount = plantTrackerService.changePassword(theAccount);
 
@@ -85,12 +84,13 @@ public class PlantTrackerServiceImplTests {
         Account managedAccount = new Account("test", null);
         Reflector.setField(managedAccount, "id", 1);
         Reflector.setField(managedAccount, "passwordCurrent", "password");
-        when(Account.managedInstance(theAccount, plantTrackerDAO)).thenReturn(managedAccount);
 
         List<Plant> thePlants = new ArrayList<Plant>();
-        when(plantTrackerDAO.findAllPlants(managedAccount)).thenReturn(thePlants);
 
+        when(plantTrackerDAO.findAccount(theAccount)).thenReturn(managedAccount);
+        when(plantTrackerDAO.findAllPlants(managedAccount)).thenReturn(thePlants);
         when(plantTrackerDAO.delete(ArgumentMatchers.any(Account.class))).thenAnswer(i->i.getArguments()[0]);
+
         Account deletedAccount = plantTrackerService.deleteAccount(theAccount);
 
         Assertions.assertEquals(deletedAccount.getId(), 1);
@@ -100,11 +100,132 @@ public class PlantTrackerServiceImplTests {
     }
 
     //Tests for public void validateCookie(String sessionID);
+    @Test
+    public void PlantTrackerService_validateCookie_ReturnsWithoutException(){
 
+        Account theAccount = new Account("test", "password");
+
+        Account managedAccount = new Account("test", null);
+        Reflector.setField(managedAccount, "id", 1);
+        Reflector.setField(managedAccount, "passwordCurrent", "password");
+
+        when(plantTrackerDAO.findAccount(theAccount)).thenReturn(managedAccount);
+        Session managedSession = new Session(theAccount, plantTrackerDAO);
+        Reflector.setField(managedSession, "id", 1);
+        managedSession.setTimeCreated(System.currentTimeMillis()/1000);
+        managedSession.setMaxAge(100);
+
+        when(plantTrackerDAO.findSessionBySessionID(managedSession.getSessionID())).thenReturn(managedSession);
+        plantTrackerService.validateCookie(managedSession.getSessionID());
+
+        Assertions.assertDoesNotThrow(()->{plantTrackerService.validateCookie(managedSession.getSessionID());});
+
+    }
+
+    @Test
+    public void PlantTrackerService_validateCookie_throwsInvalidSessionExceptionNotFound(){
+
+        String fakeSessionID = "fakeSessionID";
+
+        when(plantTrackerDAO.findSessionBySessionID(fakeSessionID)).thenThrow(InvalidSessionException.class);
+        Assertions.assertThrows(InvalidSessionException.class, ()->{plantTrackerService.validateCookie(fakeSessionID);});
+
+    }
+
+    @Test
+    public void PlantTrackerService_validateCookie_throwsInvalidSessionExceptionExpired(){
+
+        Account theAccount = new Account("test", "password");
+
+        Account managedAccount = new Account("test", null);
+        Reflector.setField(managedAccount, "id", 1);
+        Reflector.setField(managedAccount, "passwordCurrent", "password");
+
+        when(plantTrackerDAO.findAccount(theAccount)).thenReturn(managedAccount);
+        Session managedSession = new Session(theAccount, plantTrackerDAO);
+        Reflector.setField(managedSession, "id", 1);
+        managedSession.setTimeCreated((System.currentTimeMillis()/1000)-5);
+        managedSession.setMaxAge(3);
+
+        when(plantTrackerDAO.findSessionBySessionID(managedSession.getSessionID())).thenReturn(managedSession);
+        Assertions.assertThrows(InvalidSessionException.class, ()->{plantTrackerService.validateCookie(managedSession.getSessionID());});
+
+    }
 
     //Tests for public ResponseCookie createCookie(Account theAccount);
+    @Test
+    public void PlantTrackerService_createCookie_createsAndAddsValidCookie(){
+
+        Account theAccount = new Account("test", "password");
+
+        Account managedAccount = new Account("test", null);
+        Reflector.setField(managedAccount, "id", 1);
+        Reflector.setField(managedAccount, "passwordCurrent", "password");
+
+        when(plantTrackerDAO.findAccount(theAccount)).thenReturn(managedAccount);
+        ResponseCookie theCookie = plantTrackerService.createCookie(theAccount);
+
+        Assertions.assertDoesNotThrow(()->{managedAccount.getSessions().get(0);});
+        Session newSession = managedAccount.getSessions().get(0);
+
+        Assertions.assertEquals(newSession.getSessionID(), theCookie.getValue());
+        Assertions.assertEquals(newSession.getMaxAge(), theCookie.getMaxAge().toSeconds());
+
+    }
+
+    @Test
+    public void PlantTrackerService_createCookie_throwsInvalidAccountException(){
+
+        Account theAccount = new Account("test", "password");
+
+        Account managedAccount = new Account("test", null);
+        Reflector.setField(managedAccount, "id", 1);
+        Reflector.setField(managedAccount, "passwordCurrent", "password");
+
+        when(plantTrackerDAO.findAccount(theAccount)).thenThrow(EmptyResultDataAccessException.class);
+
+        Assertions.assertThrows(InvalidAccountException.class, ()->{plantTrackerService.createCookie(theAccount);});
+
+    }
 
     //Tests for public ResponseCookie getExpiredCookie(String sessionID);
+    @Test
+    public void PlantTrackerService_getExpiredCookie_removesCookie(){
+
+        Account theAccount = new Account("test", "password");
+
+        Account managedAccount = new Account("test", null);
+        Reflector.setField(managedAccount, "id", 1);
+        Reflector.setField(managedAccount, "passwordCurrent", "password");
+
+        when(plantTrackerDAO.findAccount(theAccount)).thenReturn(managedAccount);
+        Session managedSession = new Session(theAccount, plantTrackerDAO);
+        Reflector.setField(managedSession, "id", 1);
+        managedSession.setTimeCreated(System.currentTimeMillis()/1000);
+        managedSession.setMaxAge(100);
+
+        managedAccount.addSession(managedSession);
+
+        when(plantTrackerDAO.findSessionBySessionID(managedSession.getSessionID())).thenReturn(managedSession);
+        ResponseCookie expiredCookie = plantTrackerService.getExpiredCookie(managedSession.getSessionID());
+
+        Assertions.assertTrue(managedAccount.getSessions().isEmpty());
+
+        Assertions.assertEquals(expiredCookie.getValue(), "");
+        Assertions.assertEquals(expiredCookie.getMaxAge().toSeconds(), 0);
+
+    }
+
+    @Test
+    public void PlantTrackerService_getExpiredCookie_throwsInvalidSessionException(){
+
+        String fakeSessionID = "fakeSessionID";
+
+        when(plantTrackerDAO.findSessionBySessionID(fakeSessionID)).thenThrow(EmptyResultDataAccessException.class);
+
+        Assertions.assertThrows(InvalidSessionException.class, ()->{plantTrackerService.getExpiredCookie(fakeSessionID);});
+
+    }
 
     //Tests for public List<Plant> findPlants(String sessionID);
 

@@ -1,9 +1,9 @@
 package com.krisnovak.springboot.demo.planttracker.exception;
 
-import com.krisnovak.springboot.demo.planttracker.rest.HTTPResponseBody;
 import com.krisnovak.springboot.demo.planttracker.entity.InvalidAccountException;
 import com.krisnovak.springboot.demo.planttracker.entity.InvalidPlantException;
 import com.krisnovak.springboot.demo.planttracker.entity.InvalidSessionException;
+import com.krisnovak.springboot.demo.planttracker.rest.HTTPResponseBody;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.IOException;
 
-/**
- * Class responsible for handling all REST-relevant exceptions
- */
 @RestControllerAdvice
-public class RestExceptionHandlerRespository{
-
+public class RestExceptionHandlerRepository {
     //Service Layer Exceptions
 
     /**
@@ -110,5 +106,4 @@ public class RestExceptionHandlerRespository{
 
         throw new RuntimeException("Unaccounted database failure");
     }
-
 }

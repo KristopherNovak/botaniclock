@@ -324,7 +324,7 @@ public class PlantTrackerServiceImplTests {
     }
 
     //Tests for public Plant addPlant(Plant thePlant, String sessionID);
-    /*@Test
+    @Test
     public void PlantTrackerService_addPlant_returnsManagedPlant(){
 
         Account theAccount = new Account("test", "password");
@@ -332,24 +332,172 @@ public class PlantTrackerServiceImplTests {
         when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
         Session theSession = new Session(theAccount, plantTrackerDAO);
 
-        List<Plant> accountPlants = new ArrayList<Plant>();
         when(plantTrackerDAO.findSessionBySessionID(theSession.getSessionID())).thenReturn(theSession);
 
         Plant newPlant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+        Reflector.setField(newPlant, "id", 0);
 
-        Plant managedPlant = new Plant(theSession.getSessionID(), plantTrackerDAO);
-        Reflector.setField(managedPlant, "id", 1);
+        when(plantTrackerDAO.add(ArgumentMatchers.any(Plant.class))).thenAnswer(i->{
+            Plant thePlant = i.getArgument(0);
+            Reflector.setField(thePlant, "id", 1);
+            return thePlant;
+        });
 
-        when(plantTrackerDAO.add(ArgumentMatchers.any(Plant.class))).thenReturn(managedPlant);
         Plant addedPlant = plantTrackerService.addPlant(newPlant, theSession.getSessionID());
 
-        Assertions.assertSame(managedPlant, addedPlant);
-    }*/
+        Assertions.assertEquals(addedPlant.getId(), 1);
+        Assertions.assertEquals(addedPlant.getPlantName(), newPlant.getPlantName());
+        Assertions.assertEquals(addedPlant.getLastWatered(), newPlant.getLastWatered());
+        Assertions.assertEquals(addedPlant.getWateringInterval(), newPlant.getWateringInterval());
+        Assertions.assertNotNull(addedPlant.getRegistrationID());
+        Assertions.assertSame(addedPlant.getAccount(), newPlant.getAccount());
 
+    }
 
-    //Tests for public Plant updatePlant(Plant thePlant, String sessionID) ;
+    @Test
+    public void PlantTrackerService_addPlant_throwsInvalidSessionException(){
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(theSession.getSessionID())).thenReturn(theSession);
+
+        Plant newPlant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+        Reflector.setField(newPlant, "id", 0);
+
+        String fakeSessionID = theSession.getSessionID() + 'a';
+
+        when(plantTrackerDAO.findSessionBySessionID(fakeSessionID)).thenThrow(InvalidSessionException.class);
+        Assertions.assertThrows(InvalidSessionException.class, ()->{plantTrackerService.addPlant(newPlant, fakeSessionID);});
+
+    }
+
+    //Tests for public Plant updatePlant(Plant thePlant, String sessionID);
+
+    @Test
+    public void PlantTrackerService_updatePlant_returnsManagedPlant(){
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(theSession.getSessionID())).thenReturn(theSession);
+        Plant updatePlant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+        Reflector.setField(updatePlant, "id", 1);
+
+        when(plantTrackerDAO.findPlantByPlantID(updatePlant.getId())).thenReturn(updatePlant);
+        Plant updatedPlant = plantTrackerService.updatePlant(updatePlant, theSession.getSessionID());
+
+        Assertions.assertEquals(updatedPlant.getId(), 1);
+        Assertions.assertEquals(updatedPlant.getPlantName(), updatePlant.getPlantName());
+        Assertions.assertEquals(updatedPlant.getLastWatered(), updatePlant.getLastWatered());
+        Assertions.assertEquals(updatedPlant.getWateringInterval(), updatePlant.getWateringInterval());
+        Assertions.assertNotNull(updatedPlant.getRegistrationID());
+        Assertions.assertSame(updatedPlant.getAccount(), updatePlant.getAccount());
+
+    }
+
+    @Test
+    public void PlantTrackerService_updatePlant_throwsInvalidSessionException(){
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(theSession.getSessionID())).thenReturn(theSession);
+
+        Plant updatePlant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+        Reflector.setField(updatePlant, "id", 1);
+
+        String fakeSessionID = theSession.getSessionID() + 'a';
+
+        when(plantTrackerDAO.findSessionBySessionID(fakeSessionID)).thenThrow(EmptyResultDataAccessException.class);
+        Assertions.assertThrows(InvalidSessionException.class, ()->{plantTrackerService.updatePlant(updatePlant, fakeSessionID);});
+
+    }
+
+    @Test
+    public void PlantTrackerService_updatePlant_throwsInvalidPlantException(){
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(theSession.getSessionID())).thenReturn(theSession);
+
+        Plant updatePlant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+        Reflector.setField(updatePlant, "id", 1);
+
+        when(plantTrackerDAO.findSessionBySessionID(theSession.getSessionID())).thenReturn(theSession);
+        when(plantTrackerDAO.findPlantByPlantID(1)).thenThrow(EmptyResultDataAccessException.class);
+        Assertions.assertThrows(InvalidPlantException.class, ()->{plantTrackerService.updatePlant(updatePlant, theSession.getSessionID());});
+
+    }
 
     //Tests for public Plant deletePlant(String plantID, String sessionID);
+
+    @Test
+    public void PlantTrackerService_deletePlant_returnsPlant(){
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(theSession.getSessionID())).thenReturn(theSession);
+        Plant toDeletePlant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+        Reflector.setField(toDeletePlant, "id", 1);
+
+        when(plantTrackerDAO.findPlantByPlantID(toDeletePlant.getId())).thenReturn(toDeletePlant);
+        when(plantTrackerDAO.delete(ArgumentMatchers.any(Plant.class))).thenAnswer(i->i.getArgument(0));
+        Plant deletedPlant = plantTrackerService.deletePlant(Integer.toString(toDeletePlant.getId()), theSession.getSessionID());
+
+        Assertions.assertSame(toDeletePlant, deletedPlant);
+
+    }
+
+    @Test
+    public void PlantTrackerService_deletePlant_throwsInvalidSessionException(){
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(theSession.getSessionID())).thenReturn(theSession);
+        Plant toDeletePlant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+        Reflector.setField(toDeletePlant, "id", 1);
+
+        String fakeSessionID = theSession.getSessionID() + 'a';
+
+        when(plantTrackerDAO.findSessionBySessionID(fakeSessionID)).thenThrow(EmptyResultDataAccessException.class);
+
+        Assertions.assertThrows(InvalidSessionException.class, ()->{plantTrackerService.deletePlant(Integer.toString(toDeletePlant.getId()), fakeSessionID);});
+
+    }
+
+    @Test
+    public void PlantTrackerService_deletePlant_throwsInvalidPlantException(){
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(theSession.getSessionID())).thenReturn(theSession);
+        Plant toDeletePlant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+        Reflector.setField(toDeletePlant, "id", 1);
+
+        when(plantTrackerDAO.findPlantByPlantID(toDeletePlant.getId())).thenThrow(EmptyResultDataAccessException.class);
+
+        Assertions.assertThrows(InvalidPlantException.class, ()->{plantTrackerService.deletePlant(Integer.toString(toDeletePlant.getId()), theSession.getSessionID());});
+
+    }
 
     //Tests for public void confirmDeviceRegistration(Device theDevice);
 

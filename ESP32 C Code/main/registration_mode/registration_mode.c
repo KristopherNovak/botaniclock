@@ -53,15 +53,18 @@ char** getEmailAndRegistrationID(){
 static void initializeServerForRegistrationMode(){
 
     //Initialize custom local domain name ("botaniclock.local")
+    ESP_LOGI(TAG, "Starting up mDNS\n");
     mdnsStartUp("botaniclock");
 
     //Start the server up
     bool matchWildcard = true;
+    ESP_LOGI(TAG, "Starting up server\n");
     startServer(matchWildcard);
 
     //Add endpoints for:
     //GET- sending the page to the user that allows them to add accountEmail and registrationID information
     //POST- receiving accountEmail and registrationID information back from the user and processing it
+    ESP_LOGI(TAG, "Adding endpoints\n");
     addEndpoint("/register", "POST", registerDevice);
     addEndpoint("/*", "GET", serveRegisterPageFile);
 
@@ -72,6 +75,7 @@ static void initializeServerForRegistrationMode(){
 static esp_err_t registerDevice(httpd_req_t *req){
 
     //Extract email and registration ID from request
+    ESP_LOGI(TAG, "Extracting email and registration ID from request\n");
     extractEmailAndRegistrationIDFromRequest(req);
 
     //Create payload body to send to the BotaniClock server
@@ -81,16 +85,21 @@ static esp_err_t registerDevice(httpd_req_t *req){
     char *url = "https://192.168.1.153:8080/api/v1/devices";
 
     //Send a request to the BotaniClock server to see if they are valid
+    ESP_LOGI(TAG, "Attempting to send registration ID and account email to BotaniClock\n");
     int statusCode = httpRequestSend(payload_body, url, "POST");
     
     //If the provided registration ID and account username are valid, notify the request sender and finish request mode
     //Otherwise, notify the request sender that the provided registration ID and account username are not valid
     if(statusCode == 200){
+        ESP_LOGI(TAG, "Registration ID and account email verified with BotaniClock\n");
         httpd_resp_send(req, NULL, 0);
         vTaskDelay(1000/portTICK_PERIOD_MS);
         xSemaphoreGive(registrationSemaphore);
     }
-    else httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Invalid account");
+    else{
+        ESP_LOGI(TAG, "Registration ID and account email NOT verified with BotaniClock\n");
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Invalid account");
+    }
 
     //Free up the payload body
     if(payload_body != NULL) free(payload_body);
@@ -123,6 +132,7 @@ static void extractEmailAndRegistrationIDFromRequest(httpd_req_t *req){
 //Provides files of page to user that allows them to send account email and registration ID to server
 static esp_err_t serveRegisterPageFile(httpd_req_t *req){
 
+    ESP_LOGI(TAG, "Serving register page file\n");
     serveWebFile(req, "/store/register");
 
     return ESP_OK;

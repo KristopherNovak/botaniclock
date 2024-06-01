@@ -258,7 +258,7 @@ public class PlantTrackerServiceImpl implements PlantTrackerService{
         //Convert the file to an image object
         BufferedImage image = ImageIO.read(theFile.getInputStream());
 
-        String imageKey = managedPlant.generateAndSetImageKey(image, s3Bucket);
+        managedPlant.generateAndSetImageKey(image, s3Bucket);
 
         //Set an image URL in the managed plant to pass back to the client
         managedPlant.generateAndSetImageURL(s3Bucket);

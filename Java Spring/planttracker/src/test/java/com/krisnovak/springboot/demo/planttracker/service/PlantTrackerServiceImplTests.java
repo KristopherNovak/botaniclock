@@ -14,8 +14,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseCookie;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -504,5 +509,38 @@ public class PlantTrackerServiceImplTests {
     //Tests for public void updateTimestamp(Device theDevice);
 
     //Tests for public Plant updatePlantImage(String plantID, String sessionID, MultipartFile theFile) throws IOException;
+
+    @Test
+    public void PlantTrackerService_updatePlantImage_ReturnsPlantWithUpdatedImageKey() throws IOException{
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(theSession.getSessionID())).thenReturn(theSession);
+        Plant managedPlant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+        Reflector.setField(managedPlant, "id", 1);
+
+        BufferedImage image = new BufferedImage(1,1, BufferedImage.TYPE_INT_RGB);
+        //Create an output stream to write the image to
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        //Attempt to write the image as a jpeg to the output stream
+        ImageIO.write(image, "jpg", outputStream);
+        //Transform the output stream into an input stream
+        byte [] imageBuffer = outputStream.toByteArray();
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("testFile",imageBuffer);
+
+        //Setting s3Bucket to mock value to prevent connection to AWS
+        Reflector.setField(plantTrackerService, "s3Bucket", s3Bucket);
+
+        when(plantTrackerDAO.findPlantByPlantID(managedPlant.getId())).thenReturn(managedPlant);
+        when(s3Bucket.addImage(ArgumentMatchers.any(BufferedImage.class))).thenReturn("FakeKey");
+        when(s3Bucket.generateImageURL("FakeKey")).thenReturn("https://www.fakeURL.com");
+        plantTrackerService.updatePlantImage(Integer.toString(managedPlant.getId()), theSession.getSessionID(), mockMultipartFile);
+
+        Assertions.assertEquals(managedPlant.getImageURL(), "https://www.fakeURL.com");
+
+    }
 
 }

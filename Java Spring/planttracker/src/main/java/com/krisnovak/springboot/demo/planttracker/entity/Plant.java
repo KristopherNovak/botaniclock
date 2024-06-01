@@ -75,6 +75,7 @@ public class Plant {
         Session managedSession = Session.managedInstance(sessionID, plantTrackerDAO);
         this.account = managedSession.getAccount();
         this.registrationID = RandomString.generateRandomString(MAXIMUM_REGISTRATION_ID_LENGTH);
+        this.imageKey = null;
     }
 
     public int getId() {

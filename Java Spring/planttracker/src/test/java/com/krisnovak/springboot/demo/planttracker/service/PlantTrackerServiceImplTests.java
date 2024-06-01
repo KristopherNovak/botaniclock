@@ -22,6 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -505,8 +506,131 @@ public class PlantTrackerServiceImplTests {
     }
 
     //Tests for public void confirmDeviceRegistration(Device theDevice);
+    @Test
+    public void PlantTrackerService_confirmDeviceRegistration_DoesNotThrow(){
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(theSession.getSessionID())).thenReturn(theSession);
+        Plant thePlant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+
+        Device theDevice = new Device();
+        Reflector.setField(theDevice, "accountEmail", "test");
+        Reflector.setField(theDevice, "registrationID", thePlant.getRegistrationID());
+
+        when(plantTrackerDAO.findPlantByRegistrationID(thePlant.getRegistrationID())).thenReturn(thePlant);
+        Assertions.assertDoesNotThrow(()->{plantTrackerService.confirmDeviceRegistration(theDevice);});
+
+    }
+
+    @Test
+    public void PlantTrackerService_confirmDeviceRegistration_ThrowsInvalidPlantExceptionWhenInvalidEmail(){
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(theSession.getSessionID())).thenReturn(theSession);
+        Plant thePlant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+
+        Device theDevice = new Device();
+        Reflector.setField(theDevice, "accountEmail", "nottest");
+        Reflector.setField(theDevice, "registrationID", thePlant.getRegistrationID());
+
+        when(plantTrackerDAO.findPlantByRegistrationID(thePlant.getRegistrationID())).thenReturn(thePlant);
+        Assertions.assertThrows(InvalidPlantException.class, ()->{plantTrackerService.confirmDeviceRegistration(theDevice);});
+
+    }
+
+    @Test
+    public void PlantTrackerService_confirmDeviceRegistration_ThrowsInvalidPlantExceptionWhenInvalidRegistrationID(){
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(theSession.getSessionID())).thenReturn(theSession);
+        Plant thePlant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+
+        Device theDevice = new Device();
+        Reflector.setField(theDevice, "accountEmail", "test");
+        Reflector.setField(theDevice, "registrationID", thePlant.getRegistrationID() + 'a');
+
+        when(plantTrackerDAO.findPlantByRegistrationID(theDevice.getRegistrationID())).thenThrow(EmptyResultDataAccessException.class);
+        Assertions.assertThrows(InvalidPlantException.class, ()->{plantTrackerService.confirmDeviceRegistration(theDevice);});
+
+    }
 
     //Tests for public void updateTimestamp(Device theDevice);
+    @Test
+    public void PlantTrackerService_updateTimestamp_UpdatesTimestamp(){
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(theSession.getSessionID())).thenReturn(theSession);
+        Plant thePlant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+
+        LocalDate lastWatered = LocalDate.now().minusDays(5);
+        Reflector.setField(thePlant, "lastWatered", lastWatered);
+
+        Device theDevice = new Device();
+        Reflector.setField(theDevice, "accountEmail", "test");
+        Reflector.setField(theDevice, "registrationID", thePlant.getRegistrationID());
+
+        when(plantTrackerDAO.findPlantByRegistrationID(thePlant.getRegistrationID())).thenReturn(thePlant);
+        
+        Assertions.assertDoesNotThrow(()->{plantTrackerService.updateTimestamp(theDevice);});
+        Assertions.assertNotEquals(lastWatered, thePlant.getLastWatered());
+
+    }
+
+    @Test
+    public void PlantTrackerService_updateTimestamp_ThrowsInvalidPlantExceptionWhenInvalidEmail(){
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(theSession.getSessionID())).thenReturn(theSession);
+        Plant thePlant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+
+        Device theDevice = new Device();
+        Reflector.setField(theDevice, "accountEmail", "nottest");
+        Reflector.setField(theDevice, "registrationID", thePlant.getRegistrationID());
+
+        when(plantTrackerDAO.findPlantByRegistrationID(thePlant.getRegistrationID())).thenReturn(thePlant);
+        Assertions.assertThrows(InvalidPlantException.class, ()->{plantTrackerService.updateTimestamp(theDevice);});
+
+    }
+
+    @Test
+    public void PlantTrackerService_updateTimestamp_ThrowsInvalidPlantExceptionWhenInvalidRegistrationID(){
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(theSession.getSessionID())).thenReturn(theSession);
+        Plant thePlant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+
+        Device theDevice = new Device();
+        Reflector.setField(theDevice, "accountEmail", "test");
+        Reflector.setField(theDevice, "registrationID", thePlant.getRegistrationID() + 'a');
+
+        when(plantTrackerDAO.findPlantByRegistrationID(theDevice.getRegistrationID())).thenThrow(EmptyResultDataAccessException.class);
+        Assertions.assertThrows(InvalidPlantException.class, ()->{plantTrackerService.updateTimestamp(theDevice);});
+
+    }
 
     //Tests for public Plant updatePlantImage(String plantID, String sessionID, MultipartFile theFile) throws IOException;
 

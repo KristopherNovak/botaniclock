@@ -20,7 +20,7 @@ public class Device {
     @Transient
     private String accountEmail;
 
-    private Device(){}
+    public Device(){}
 
     public String getRegistrationID() {
         return registrationID;

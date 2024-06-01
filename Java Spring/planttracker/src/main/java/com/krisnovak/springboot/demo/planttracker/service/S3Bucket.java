@@ -35,9 +35,6 @@ public class S3Bucket {
     //Expiration time in milliseconds
     private static final int DURATION_BEFORE_EXPIRATION_IN_MILLISECONDS = 60*1000;
 
-    //S3 Properties File Path
-    private final static String s3PropertiesFilePath = "../../../credentials.properties";
-
     /**
      * Function that initializes the S3 bucket according to the properties in the provided file.
      * @param s3PropertiesFile The file that includes the s3 properties (should be in a .properties format)

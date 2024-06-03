@@ -586,7 +586,7 @@ public class PlantTrackerServiceImplTests {
         Reflector.setField(theDevice, "registrationID", thePlant.getRegistrationID());
 
         when(plantTrackerDAO.findPlantByRegistrationID(thePlant.getRegistrationID())).thenReturn(thePlant);
-        
+
         Assertions.assertDoesNotThrow(()->{plantTrackerService.updateTimestamp(theDevice);});
         Assertions.assertNotEquals(lastWatered, thePlant.getLastWatered());
 

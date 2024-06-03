@@ -1,27 +1,38 @@
 package com.krisnovak.springboot.demo.planttracker.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.krisnovak.springboot.demo.planttracker.Reflector;
+import com.krisnovak.springboot.demo.planttracker.configuration.AppConfig;
+import com.krisnovak.springboot.demo.planttracker.dao.PlantTrackerDAO;
+import com.krisnovak.springboot.demo.planttracker.dao.PlantTrackerDAOImpl;
 import com.krisnovak.springboot.demo.planttracker.entity.*;
 import com.krisnovak.springboot.demo.planttracker.service.PlantTrackerService;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+
 
 import java.io.IOException;
 import java.util.List;
+
+import static org.apache.http.client.methods.RequestBuilder.post;
+import static org.mockito.Mockito.when;
 
 @WebMvcTest(controllers = PlantTrackerRestController.class)
 @AutoConfigureMockMvc(addFilters=false)
@@ -33,11 +44,29 @@ public class PlantTrackerRestTests {
     @MockBean
     private PlantTrackerService plantTrackerService;
 
+    @MockBean
+    private AppConfig appConfig;
+
+    @MockBean
+    private PlantTrackerDAO plantTrackerDAO;
+
     @Autowired
     private ObjectMapper objectMapper;
 
     //Tests for @PostMapping("/session") ResponseEntity<HTTPResponseBody>
     //validateCookie(@CookieValue(name = "sessionId", defaultValue = "") String sessionId)
+    @Test
+    public void PlantTrackerRestController_validateCookie_ReturnsOkStatusCode() throws Exception{
+
+        //TODO: Fix text to mimic cookie text value
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/session")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString("sessionId = fakeSessionID")));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk());
+
+    }
+
 
     //Tests for @PostMapping("/account/login")
     // public ResponseEntity<HTTPResponseBody> logIn(@RequestBody Account theAccount)

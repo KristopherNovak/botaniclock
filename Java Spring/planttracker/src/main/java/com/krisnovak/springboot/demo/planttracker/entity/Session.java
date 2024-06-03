@@ -42,7 +42,7 @@ public class Session {
     @JsonIgnore
     private Account account;
 
-    public Session(){}
+    private Session(){}
 
     /**
      * Function that creates a new session

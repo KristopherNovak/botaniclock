@@ -7,10 +7,12 @@ import com.krisnovak.springboot.demo.planttracker.dao.PlantTrackerDAO;
 import com.krisnovak.springboot.demo.planttracker.dao.PlantTrackerDAOImpl;
 import com.krisnovak.springboot.demo.planttracker.entity.*;
 import com.krisnovak.springboot.demo.planttracker.service.PlantTrackerService;
+import jakarta.servlet.http.Cookie;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.AdditionalMatchers;
 import org.mockito.ArgumentMatchers;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.apache.http.client.methods.RequestBuilder.post;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @WebMvcTest(controllers = PlantTrackerRestController.class)
@@ -58,13 +61,27 @@ public class PlantTrackerRestTests {
     @Test
     public void PlantTrackerRestController_validateCookie_ReturnsOkStatusCode() throws Exception{
 
-        //TODO: Fix text to mimic cookie text value
+        Cookie theCookie = new Cookie("sessionId", "fakeSessionID");
+
+
+        //Throws an invalid session exception if anything but fakeSessionID is passed to validateCookie
+        doThrow(InvalidSessionException.class).when(plantTrackerService).validateCookie(AdditionalMatchers.not(ArgumentMatchers.eq("fakeSessionID")));
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/session")
+                .cookie(theCookie));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk());
+
+    }
+
+    @Test
+    public void PlantTrackerRestController_validateCookie_Returns403() throws Exception{
+
+        doThrow(InvalidSessionException.class).when(plantTrackerService).validateCookie(ArgumentMatchers.any(String.class));
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/session")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString("sessionId = fakeSessionID")));
 
-        response.andExpect(MockMvcResultMatchers.status().isOk());
-
+        response.andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
 

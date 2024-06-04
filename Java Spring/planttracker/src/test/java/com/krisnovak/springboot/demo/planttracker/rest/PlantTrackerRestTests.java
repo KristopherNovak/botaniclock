@@ -76,10 +76,11 @@ public class PlantTrackerRestTests {
     @Test
     public void PlantTrackerRestController_validateCookie_Returns403() throws Exception{
 
-        doThrow(InvalidSessionException.class).when(plantTrackerService).validateCookie(ArgumentMatchers.any(String.class));
+        Cookie theCookie = new Cookie("sessionId", "fakeSessionID");
+
+        doThrow(InvalidSessionException.class).when(plantTrackerService).validateCookie(ArgumentMatchers.eq("fakeSessionID"));
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/session")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString("sessionId = fakeSessionID")));
+                .cookie(theCookie));
 
         response.andExpect(MockMvcResultMatchers.status().isForbidden());
     }
@@ -87,9 +88,68 @@ public class PlantTrackerRestTests {
 
     //Tests for @PostMapping("/account/login")
     // public ResponseEntity<HTTPResponseBody> logIn(@RequestBody Account theAccount)
+    @Test
+    public void PlantTrackerRestController_logIn_ReturnsOkStatusCode() throws Exception{
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+        ResponseCookie theCookie = theSession.getResponseCookie();
+
+        when(plantTrackerService.createCookie(theAccount)).thenReturn(theCookie);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/account/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(theAccount)));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.cookie().value("sessionId", theSession.getSessionID()));
+
+    }
+
+    @Test
+    public void PlantTrackerRestController_logIn_Returns400() throws Exception{
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerService.createCookie(theAccount)).thenThrow(InvalidAccountException.class);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/account/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(theAccount)));
+
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
 
     //Tests for @PostMapping("/account/logout")
     // public ResponseEntity<HTTPResponseBody> logOut(@CookieValue(name = "sessionId", defaultValue = "") String sessionId)
+
+    @Test
+    public void PlantTrackerRestController_logOut_ReturnsOkStatusCode() throws Exception{
+
+        Cookie theCookie = new Cookie("sessionId", "fakeSessionID");
+        ResponseCookie expiredCookie = Session.getExpiredCookie();
+
+        when(plantTrackerService.getExpiredCookie("fakeSessionID")).thenReturn(expiredCookie);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/account/logout")
+                .cookie(theCookie));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.cookie().maxAge("sessionId", 0));
+
+    }
+
+    @Test
+    public void PlantTrackerRestController_logOut_Returns403() throws Exception{
+
+        Cookie theCookie = new Cookie("sessionId", "fakeSessionID");
+
+        when(plantTrackerService.getExpiredCookie("fakeSessionID")).thenThrow(InvalidSessionException.class);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/account/logout")
+                .cookie(theCookie));
+
+        response.andExpect(MockMvcResultMatchers.status().isForbidden());
+
+    }
 
     //Tests for @PostMapping("/account/signup")
     //public ResponseEntity<HTTPResponseBody> signUp(@RequestBody Account theAccount)

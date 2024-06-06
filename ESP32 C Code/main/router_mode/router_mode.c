@@ -34,6 +34,8 @@ static char* routerPassword = NULL;
 //parameterArray[1] is routerPassword
 char** getSSIDAndRouterPassword(){
 
+    ESP_LOGI(TAG, "Entering router mode\n");
+
     //Initialize semaphore to prevent function from returning before SSID and routerPassword have been set
     routerSemaphore = xSemaphoreCreateBinary();
 
@@ -47,6 +49,8 @@ char** getSSIDAndRouterPassword(){
     char** parameterArray = malloc(2*sizeof(char*));
     parameterArray[0] = ssid;
     parameterArray[1] = routerPassword;
+
+    ESP_LOGI(TAG, "Returning from router mode\n");
 
     return parameterArray;
 }
@@ -70,11 +74,15 @@ static void initializeServerForRouterMode(){
     addEndpoint("/*", "POST", processReceivedRouterInformation);
     addEndpoint("/*", "GET", serveRouterPageFile);
 
+    ESP_LOGI(TAG, "Server initialized\n");
+
     //TODO: Look to see if function needed to power down server
 }
 
 //Processes router information received from the user, notifies the user, and indicates for router mode to end
 static esp_err_t processReceivedRouterInformation(httpd_req_t *req){
+
+    ESP_LOGI(TAG, "Request with router information received\n");
 
     //Extract the SSID and password from the request
     extractSSIDAndPasswordFromRequest(req);
@@ -83,6 +91,7 @@ static esp_err_t processReceivedRouterInformation(httpd_req_t *req){
     httpd_resp_send(req, NULL, 0);
 
     //Indicate that router mode is ready to end
+    ESP_LOGI(TAG, "Requesting to end router mode\n");
     vTaskDelay(1000/portTICK_PERIOD_MS);
     xSemaphoreGive(routerSemaphore);
 
@@ -103,6 +112,8 @@ static void extractSSIDAndPasswordFromRequest(httpd_req_t *req){
     ssid = strdup(tempSSID);
     routerPassword = strdup(tempRouterPassword);
 
+    ESP_LOGI(TAG, "Router information extracted from request\n");
+
     //Free up the payload
     cJSON_Delete(payload);
 
@@ -111,8 +122,10 @@ static void extractSSIDAndPasswordFromRequest(httpd_req_t *req){
 
 //Handler that serves a requested router page file to the user
 static esp_err_t serveRouterPageFile(httpd_req_t *req){
+
+    ESP_LOGI(TAG, "Serving router page to client\n");
     
-    //Serve the requested riuter page file to the user
+    //Serve the requested router page file to the user
     serveWebFile(req, "/store/router");
 
     return ESP_OK;

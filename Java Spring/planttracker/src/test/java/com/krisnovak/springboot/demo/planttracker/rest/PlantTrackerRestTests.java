@@ -153,12 +153,96 @@ public class PlantTrackerRestTests {
 
     //Tests for @PostMapping("/account/signup")
     //public ResponseEntity<HTTPResponseBody> signUp(@RequestBody Account theAccount)
+    @Test
+    public void PlantTrackerRestController_signUp_ReturnsOkStatusCode() throws Exception{
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+        ResponseCookie theCookie = theSession.getResponseCookie();
+
+        when(plantTrackerService.signUp(theAccount)).thenReturn(theAccount);
+        when(plantTrackerService.createCookie(theAccount)).thenReturn(theCookie);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/account/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(theAccount)));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.cookie().value("sessionId", theSession.getSessionID()));
+
+    }
+
+    @Test
+    public void PlantTrackerRestController_signUp_Returns400() throws Exception{
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerService.signUp(theAccount)).thenThrow(InvalidAccountException.class);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/account/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(theAccount)));
+
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
 
     //Tests for @PostMapping("/account/password")
     //public ResponseEntity<HTTPResponseBody> changePassword(@RequestBody Account theAccount)
+    @Test
+    public void PlantTrackerRestController_changePassword_ReturnsOkStatusCode() throws Exception{
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerService.changePassword(theAccount)).thenReturn(theAccount);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/account/password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(theAccount)));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk());
+
+    }
+
+    @Test
+    public void PlantTrackerRestController_changePassword_Returns400() throws Exception{
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerService.changePassword(theAccount)).thenThrow(InvalidAccountException.class);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/account/password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(theAccount)));
+
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
 
     //Tests for @PostMapping("/account/delete")
     //public ResponseEntity<HTTPResponseBody> deleteAccount(@RequestBody Account theAccount)
+    @Test
+    public void PlantTrackerRestController_deleteAccount_ReturnsOkStatusCode() throws Exception{
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerService.deleteAccount(theAccount)).thenReturn(theAccount);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/account/delete")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(theAccount)));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk());
+
+    }
+
+    @Test
+    public void PlantTrackerRestController_deleteAccount_Returns400() throws Exception{
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerService.deleteAccount(theAccount)).thenThrow(InvalidAccountException.class);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/account/delete")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(theAccount)));
+
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
 
     //Tests for @GetMapping("/plants")
     //public ResponseEntity<List<Plant>> getPlants(@CookieValue(name = "sessionId", defaultValue = "") String sessionID)

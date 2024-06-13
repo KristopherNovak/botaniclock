@@ -1,6 +1,7 @@
 package com.krisnovak.springboot.demo.planttracker.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.krisnovak.springboot.demo.planttracker.Reflector;
 import com.krisnovak.springboot.demo.planttracker.configuration.AppConfig;
 import com.krisnovak.springboot.demo.planttracker.dao.PlantTrackerDAO;
@@ -23,6 +24,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.annotation.*;
@@ -31,9 +33,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.http.client.methods.RequestBuilder.post;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -246,6 +250,34 @@ public class PlantTrackerRestTests {
 
     //Tests for @GetMapping("/plants")
     //public ResponseEntity<List<Plant>> getPlants(@CookieValue(name = "sessionId", defaultValue = "") String sessionID)
+
+    @Test
+    public void PlantTrackerRestController_getPlants_ReturnsPlants() throws Exception{
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(ArgumentMatchers.any(String.class))).thenReturn(theSession);
+        Plant plant1 = new Plant(theSession.getSessionID(), plantTrackerDAO);
+        Plant plant2 = new Plant(theSession.getSessionID(), plantTrackerDAO);
+        List<Plant> plants = new ArrayList<>();
+        plants.add(plant1);
+        plants.add(plant2);
+
+        Cookie theCookie = new Cookie("sessionId", theSession.getSessionID());
+
+        when(plantTrackerService.findPlants(theSession.getSessionID())).thenReturn(plants);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/plants")
+                .cookie(theCookie));
+
+        ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = objectWriter.writeValueAsString(plants);
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(json));
+    }
 
     //Tests for @GetMapping("/plants/{plantID}")
     //public ResponseEntity<Plant> getPlant(@PathVariable String plantID, @CookieValue(name = "sessionId", defaultValue = "") String sessionID)

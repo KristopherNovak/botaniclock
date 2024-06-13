@@ -32,7 +32,7 @@ static char* accountEmail = NULL;
 //parameterArray[1] is plant registration ID
 char** getEmailAndRegistrationID(){
 
-    ESP_LOGI(TAG, "Entering registration mode");
+    ESP_LOGI(TAG, "Entering registration mode\n");
 
     //Initialize semaphore to prevent function from returning before registrationID and accountEmail have been set
     registrationSemaphore = xSemaphoreCreateBinary();
@@ -48,7 +48,7 @@ char** getEmailAndRegistrationID(){
     parameterArray[0] = accountEmail;
     parameterArray[1] = registrationID;
 
-    ESP_LOGI(TAG, "Returning from registration mode");
+    ESP_LOGI(TAG, "Returning from registration mode\n");
 
     return parameterArray;
 }
@@ -69,7 +69,7 @@ static void initializeServerForRegistrationMode(){
     addEndpoint("/register", "POST", registerDevice);
     addEndpoint("/*", "GET", serveRegisterPageFile);
 
-    ESP_LOGI(TAG, "Server initialized");
+    ESP_LOGI(TAG, "Server initialized\n");
 
 }
 
@@ -77,7 +77,7 @@ static void initializeServerForRegistrationMode(){
 //are linked to a valid plant
 static esp_err_t registerDevice(httpd_req_t *req){
 
-    ESP_LOGI(TAG, "Request for registering device received");
+    ESP_LOGI(TAG, "Request for registering device received\n");
 
     //Extract email and registration ID from request
     extractEmailAndRegistrationIDFromRequest(req);
@@ -89,21 +89,21 @@ static esp_err_t registerDevice(httpd_req_t *req){
     char *url = "https://192.168.1.153:8080/api/v1/devices";
 
     //Send a request to the BotaniClock server to see if they are valid
-    ESP_LOGI(TAG, "Verifying email and registration ID with server");
+    ESP_LOGI(TAG, "Verifying email and registration ID with server\n");
     int statusCode = httpRequestSend(payload_body, url, "POST");
     
     //If the provided registration ID and account username are valid, notify the request sender and finish request mode
     //Otherwise, notify the request sender that the provided registration ID and account username are not valid
     if(statusCode == 200){
-        ESP_LOGI(TAG, "Registration successful");
+        ESP_LOGI(TAG, "Registration successful\n");
         httpd_resp_send(req, NULL, 0);
 
-        ESP_LOGI(TAG, "Attempting to return from registration mode");
+        ESP_LOGI(TAG, "Attempting to return from registration mode\n");
         vTaskDelay(1000/portTICK_PERIOD_MS);
         xSemaphoreGive(registrationSemaphore);
     }
     else{
-        ESP_LOGE(TAG, "Registration failed");
+        ESP_LOGE(TAG, "Registration failed\n");
         httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Invalid account");
     }
 
@@ -118,7 +118,7 @@ static esp_err_t registerDevice(httpd_req_t *req){
 static void extractEmailAndRegistrationIDFromRequest(httpd_req_t *req){
 
     //Get the payload from the request
-    ESP_LOGI(TAG, "Extracting email and registration ID from request");
+    ESP_LOGI(TAG, "Extracting email and registration ID from request\n");
     cJSON *payload = getJSONPayloadFromRequest(req);
 
     //Extract registrationID and accountEmail from the payload
@@ -139,7 +139,7 @@ static void extractEmailAndRegistrationIDFromRequest(httpd_req_t *req){
 //Provides files of page to user that allows them to send account email and registration ID to server
 static esp_err_t serveRegisterPageFile(httpd_req_t *req){
 
-    ESP_LOGI(TAG, "Serving registration page to client");
+    ESP_LOGI(TAG, "Serving registration page to client\n");
     serveWebFile(req, "/store/register");
 
     return ESP_OK;

@@ -279,8 +279,67 @@ public class PlantTrackerRestTests {
                 .andExpect(MockMvcResultMatchers.content().json(json));
     }
 
+    @Test
+    public void PlantTrackerRestController_getPlants_Returns403BadSession() throws Exception{
+
+        Cookie theCookie = new Cookie("sessionId", "fakeSessionID");
+
+        when(plantTrackerService.findPlants("fakeSessionID")).thenThrow(InvalidSessionException.class);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/plants")
+                .cookie(theCookie));
+
+        response.andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
     //Tests for @GetMapping("/plants/{plantID}")
     //public ResponseEntity<Plant> getPlant(@PathVariable String plantID, @CookieValue(name = "sessionId", defaultValue = "") String sessionID)
+    @Test
+    public void PlantTrackerRestController_getPlant_ReturnsPlant() throws Exception{
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(ArgumentMatchers.any(String.class))).thenReturn(theSession);
+        Plant plant1 = new Plant(theSession.getSessionID(), plantTrackerDAO);
+
+        Cookie theCookie = new Cookie("sessionId", theSession.getSessionID());
+
+        when(plantTrackerService.findPlantByPlantID("1", theSession.getSessionID())).thenReturn(plant1);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/plants/1")
+                .cookie(theCookie));
+
+        ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = objectWriter.writeValueAsString(plant1);
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(json));
+    }
+
+    @Test
+    public void PlantTrackerRestController_getPlant_Returns403BadSession() throws Exception{
+
+        Cookie theCookie = new Cookie("sessionId", "fakeSessionID");
+
+        when(plantTrackerService.findPlantByPlantID("1", "fakeSessionID")).thenThrow(InvalidSessionException.class);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/plants/1")
+                .cookie(theCookie));
+
+        response.andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Test
+    public void PlantTrackerRestController_getPlant_Returns404BadPlant() throws Exception{
+
+        Cookie theCookie = new Cookie("sessionId", "fakeSessionID");
+
+        when(plantTrackerService.findPlantByPlantID("1", "fakeSessionID")).thenThrow(InvalidPlantException.class);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/plants/1")
+                .cookie(theCookie));
+
+        response.andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
 
     //Tests for @PostMapping("/plants")
     //public ResponseEntity<Plant> addPlant(@RequestBody Plant thePlant, @CookieValue(name = "sessionId", defaultValue = "") String sessionID)

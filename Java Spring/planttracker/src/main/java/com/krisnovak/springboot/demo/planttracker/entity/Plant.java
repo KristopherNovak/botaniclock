@@ -311,8 +311,6 @@ public class Plant {
         return Scalr.resize(image, targetWidth);
     }
 
-
-    //TODO: Finish filling this out to accurately reflect equality
     @Override
     public boolean equals(Object o){
         if(o == null) return false;
@@ -321,14 +319,14 @@ public class Plant {
         Plant otherPlant = (Plant) o;
 
         if(otherPlant.getId() != this.id) return false;
+        return bothNullOrEqual(otherPlant.getRegistrationID(), this.registrationID);
 
-        //TODO: Simplify this with a function
-        if(otherPlant.getPlantName() == null && this.plantName != null) return false;
-        if(this.plantName == null && otherPlant.getPlantName() != null) return false;
-        else if(this.plantName != null && !this.plantName.equals(otherPlant.getPlantName())) return false;
+    }
 
-        return true;
-
+    private boolean bothNullOrEqual(Object o1, Object o2){
+        if(o1 == null && o2 == null) return true;
+        if(o1 == null || o2 == null) return false;
+        return o1.equals(o2);
     }
 
     @Override

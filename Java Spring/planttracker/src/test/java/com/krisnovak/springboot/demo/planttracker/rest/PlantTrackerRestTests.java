@@ -343,6 +343,33 @@ public class PlantTrackerRestTests {
 
     //Tests for @PostMapping("/plants")
     //public ResponseEntity<Plant> addPlant(@RequestBody Plant thePlant, @CookieValue(name = "sessionId", defaultValue = "") String sessionID)
+    @Test
+    public void PlantTrackerRestController_addPlant_ReturnsPlant() throws Exception{
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(ArgumentMatchers.any(String.class))).thenReturn(theSession);
+        Plant plant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+
+        Cookie theCookie = new Cookie("sessionId", theSession.getSessionID());
+
+        when(plantTrackerService.addPlant(plant, theSession.getSessionID())).thenReturn(plant);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/plants")
+                .cookie(theCookie)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(plant)));
+
+        ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = objectWriter.writeValueAsString(plant);
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(json));
+    }
+
+
 
     //Tests for @PutMapping("/plants")
     //public ResponseEntity<Plant> updatePlant(@RequestBody Plant thePlant, @CookieValue(name = "sessionId", defaultValue = "") String sessionID)

@@ -310,4 +310,29 @@ public class Plant {
         //Create the scaled image
         return Scalr.resize(image, targetWidth);
     }
+
+
+    //TODO: Finish filling this out to accurately reflect equality
+    @Override
+    public boolean equals(Object o){
+        if(o == null) return false;
+        if(!o.getClass().equals(Plant.class)) return false;
+
+        Plant otherPlant = (Plant) o;
+
+        if(otherPlant.getId() != this.id) return false;
+
+        //TODO: Simplify this with a function
+        if(otherPlant.getPlantName() == null && this.plantName != null) return false;
+        if(this.plantName == null && otherPlant.getPlantName() != null) return false;
+        else if(this.plantName != null && !this.plantName.equals(otherPlant.getPlantName())) return false;
+
+        return true;
+
+    }
+
+    @Override
+    public int hashCode(){
+        return this.registrationID.hashCode();
+    }
 }

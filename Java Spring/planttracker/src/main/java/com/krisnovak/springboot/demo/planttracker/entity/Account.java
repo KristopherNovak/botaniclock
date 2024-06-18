@@ -191,26 +191,19 @@ public class Account {
      */
     @Override
     public boolean equals(Object o){
-        if(o == null){
-            return false;
-        }
-
-        if(!o.getClass().equals(Account.class)){
-            return false;
-        }
+        if(o == null) return false;
+        if(!o.getClass().equals(Account.class)) return false;
 
         Account otherAccount = (Account) o;
 
-        if(otherAccount.getId() == this.id){
-            return true;
-        }
+        if(otherAccount.getId() == this.id) return true;
 
         return false;
     }
 
     @Override
     public int hashCode(){
-        return Integer.hashCode(this.getId());
+        return this.email.hashCode();
     }
 
 }

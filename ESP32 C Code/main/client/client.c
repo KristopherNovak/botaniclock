@@ -83,7 +83,7 @@ static esp_http_client_method_t strToClientMethod(char* requestType){
 
     if(strcmp(requestType, "DELETE") == 0) return HTTP_METHOD_DELETE;
 
-    ESP_LOGE(TAG, "Invalid request type");
+    ESP_LOGE(TAG, "Invalid HTTP request type. Valid request types include PUT, POST, GET, and DELETE");
     return -1;
 
 }
@@ -114,6 +114,7 @@ char *createDeviceBodyJSON(char* registrationID, char* accountEmail){
 //Handler used to make sure all data is appended onto the HTTP response (as it may not be received all at once
 //and thus this function may be called multiple times)
 static esp_err_t httpClientEventHandler(esp_http_client_event_t *event){
+
     //If no new data is received, no need to do anything
     if(event->event_id != HTTP_EVENT_ON_DATA){
         return ESP_OK;

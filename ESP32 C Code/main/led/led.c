@@ -24,6 +24,9 @@ static EventGroupHandle_t ledEvents;
 //The pin number of the LED
 static int ledPin;
 
+//The tag used when calling ESP_LOG
+static char* TAG;
+
 //Initializes the LED at the provided LED pin to change state when a state associated with the LED event handle changes
 //Note that this is currently only meant to work for one LED pin
 //TODO: Make this work for any number of LEDs by passing LEDPin and LEDEvent to handle locally
@@ -40,7 +43,7 @@ void startLED(int providedLEDPin, EventGroupHandle_t providedLEDEvents){
     xTaskCreate(&flashLED, "flashLED", 2048, NULL, 1, NULL);
 
     //Notify user that the LED is turned on
-    ESP_LOGI("LED", "LED turned on\n");
+    ESP_LOGI(TAG, "LED initialized\n");
 
 }
 
@@ -63,12 +66,15 @@ static void flashLED(){
         //Create a task associated with the new state
         switch(result){
             case(NO_FLASH):
+                ESP_LOGI(TAG, "LED switching to no flash mode\n");
                 xTaskCreate(&noFlash, "noFlash", 1024, NULL, 1, &ledHandle);
                 break;
             case(SINGLE_FLASH):
+                ESP_LOGI(TAG, "LED switching to single flash mode\n");
                 xTaskCreate(&singleFlash, "singleFlash", 1024, NULL, 1, &ledHandle);
                 break;
             case(DOUBLE_FLASH):
+                ESP_LOGI(TAG, "LED switching to double flash mode\n");
                 xTaskCreate(&doubleFlash, "doubleFlash", 1024, NULL, 1, &ledHandle);
                 break;
         }

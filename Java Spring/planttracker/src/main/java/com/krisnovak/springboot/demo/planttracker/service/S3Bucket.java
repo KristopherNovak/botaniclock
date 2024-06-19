@@ -12,6 +12,7 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.krisnovak.springboot.demo.planttracker.entity.Plant;
+import com.krisnovak.springboot.demo.planttracker.entity.Session;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -138,6 +139,31 @@ public class S3Bucket {
 
         //Return the presigned URL
         return url.toString();
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(o == null) return false;
+        if(!o.getClass().equals(S3Bucket.class)) return false;
+
+        S3Bucket otherS3Bucket = (S3Bucket) o;
+
+        if(!bothNullOrEqual(this.s3Client, otherS3Bucket.getS3Client())) return false;
+        if(!bothNullOrEqual(this.bucketName, otherS3Bucket.getBucketName())) return false;
+
+        return true;
+
+    }
+
+    private boolean bothNullOrEqual(Object o1, Object o2){
+        if(o1 == null && o2 == null) return true;
+        if(o1 == null || o2 == null) return false;
+        return o1.equals(o2);
+    }
+
+    @Override
+    public int hashCode(){
+        return this.s3Client.hashCode();
     }
 
 }

@@ -156,4 +156,27 @@ public class Session {
                 .httpOnly(true)
                 .build();
     }
+
+    @Override
+    public boolean equals(Object o){
+        if(o == null) return false;
+        if(!o.getClass().equals(Session.class)) return false;
+
+        Session otherSession = (Session) o;
+
+        if(otherSession.getId() != this.id) return false;
+        return bothNullOrEqual(otherSession.getSessionID(), this.sessionID);
+
+    }
+
+    private boolean bothNullOrEqual(Object o1, Object o2){
+        if(o1 == null && o2 == null) return true;
+        if(o1 == null || o2 == null) return false;
+        return o1.equals(o2);
+    }
+
+    @Override
+    public int hashCode(){
+        return this.sessionID.hashCode();
+    }
 }

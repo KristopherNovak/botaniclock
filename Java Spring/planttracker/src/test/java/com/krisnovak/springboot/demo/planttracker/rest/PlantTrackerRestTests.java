@@ -369,6 +369,28 @@ public class PlantTrackerRestTests {
                 .andExpect(MockMvcResultMatchers.content().json(json));
     }
 
+    @Test
+    public void PlantTrackerRestController_addPlant_Returns403BadSession() throws Exception{
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(ArgumentMatchers.any(String.class))).thenReturn(theSession);
+        Plant plant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+
+        Cookie theCookie = new Cookie("sessionId", "fakeSessionID");
+
+        when(plantTrackerService.addPlant(plant, "fakeSessionID")).thenThrow(InvalidSessionException.class);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/plants")
+                .cookie(theCookie)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(plant)));
+
+        response.andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
 
 
     //Tests for @PutMapping("/plants")

@@ -38,14 +38,11 @@ public class S3Bucket {
 
     /**
      * Function that initializes the S3 bucket according to the properties in the provided file.
-     * @param s3PropertiesFile The file that includes the s3 properties (should be in a .properties format)
+     * @param s3Properties The file that includes the s3 properties (should be in a .properties format)
      * and should include an "accessKey" field, a "secretKey" field, and a "bucketName" field
      * @throws IOException Thrown if the file is not located or if the file is in the wrong format
      */
-    public S3Bucket(File s3PropertiesFile) throws IOException{
-
-        Properties s3Properties = new Properties();
-        s3Properties.load(new FileReader(s3PropertiesFile));
+    private S3Bucket(Properties s3Properties){
 
         String accessKey = s3Properties.getProperty("accessKey");
         String secretKey = s3Properties.getProperty("secretKey");
@@ -61,6 +58,20 @@ public class S3Bucket {
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(Regions.US_EAST_2)
                 .build();
+    }
+
+    public static S3Bucket newInstanceFromPropertiesFile(File s3PropertiesFile){
+        Properties s3Properties = loadPropertiesFromFile(s3PropertiesFile);
+        return new S3Bucket(s3Properties);
+    }
+
+    private static Properties loadPropertiesFromFile(File theFile){
+        Properties properties = new Properties();
+        try{properties.load(new FileReader(theFile));}
+        catch (IOException e){
+            throw new RuntimeException("Properties file is not in the proper format");
+        }
+        return properties;
     }
 
     public AmazonS3 getS3Client() {

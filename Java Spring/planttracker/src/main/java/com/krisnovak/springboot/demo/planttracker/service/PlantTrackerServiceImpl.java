@@ -26,19 +26,12 @@ public class PlantTrackerServiceImpl implements PlantTrackerService{
     private S3Bucket s3Bucket;
 
     //S3 Properties File Path
-    private final static String s3PropertiesFilePath = "../../../credentials.properties";
+    private final static File s3PropertiesFile = new File("../../../credentials.properties");
 
     @Autowired
     public PlantTrackerServiceImpl(PlantTrackerDAO thePlantTrackerDAO){
         this.plantTrackerDAO = thePlantTrackerDAO;
-
-        //Grab S3Bucket from associated file
-        File s3PropertiesFile = new File(s3PropertiesFilePath);
-        try{this.s3Bucket = new S3Bucket(s3PropertiesFile);
-        }catch(IOException e){
-            throw new RuntimeException("s3 Properties file is not at the indicated location or is in the wrong format");
-        }
-
+        this.s3Bucket = S3Bucket.newInstanceFromPropertiesFile(s3PropertiesFile);
     }
 
     @Override

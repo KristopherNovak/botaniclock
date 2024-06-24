@@ -22,6 +22,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -32,14 +33,16 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.http.client.methods.RequestBuilder.post;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @WebMvcTest(controllers = PlantTrackerRestController.class)
 @AutoConfigureMockMvc(addFilters=false)
@@ -391,10 +394,55 @@ public class PlantTrackerRestTests {
         response.andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
-
-
     //Tests for @PutMapping("/plants")
     //public ResponseEntity<Plant> updatePlant(@RequestBody Plant thePlant, @CookieValue(name = "sessionId", defaultValue = "") String sessionID)
+    @Test
+    public void PlantTrackerRestController_updatePlant_ReturnsPlant() throws Exception{
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(ArgumentMatchers.any(String.class))).thenReturn(theSession);
+        Plant plant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+
+        Cookie theCookie = new Cookie("sessionId", theSession.getSessionID());
+
+        when(plantTrackerService.updatePlant(plant, theSession.getSessionID())).thenReturn(plant);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/plants")
+                .cookie(theCookie)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(plant)));
+
+        ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = objectWriter.writeValueAsString(plant);
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(json));
+    }
+
+    @Test
+    public void PlantTrackerRestController_updatePlant_Returns403BadSession() throws Exception{
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(ArgumentMatchers.any(String.class))).thenReturn(theSession);
+        Plant plant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+
+        Cookie theCookie = new Cookie("sessionId", "fakeSessionID");
+
+        when(plantTrackerService.updatePlant(plant, "fakeSessionID")).thenThrow(InvalidSessionException.class);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/plants")
+                .cookie(theCookie)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(plant)));
+
+        response.andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
 
     // Tests for @PutMapping("/plants/{plantID}")
     //public ResponseEntity<Plant> updatePlantImage(
@@ -404,6 +452,61 @@ public class PlantTrackerRestTests {
 
     // Tests for @DeleteMapping("/plants/{plantID}")
     //public ResponseEntity<Plant> deletePlant(@PathVariable String plantID, @CookieValue(name = "sessionId", defaultValue = "") String sessionID) throws IOException
+    @Test
+    public void PlantTrackerRestController_deletePlant_ReturnsPlant() throws Exception{
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(ArgumentMatchers.any(String.class))).thenReturn(theSession);
+        Plant plant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+
+        Cookie theCookie = new Cookie("sessionId", theSession.getSessionID());
+
+        when(plantTrackerService.deletePlant("1", theSession.getSessionID())).thenReturn(plant);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/plants/1")
+                .cookie(theCookie));
+
+        ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = objectWriter.writeValueAsString(plant);
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(json));
+    }
+
+    @Test
+    public void PlantTrackerRestController_deletePlant_Throws403BadSession() throws Exception{
+
+        Cookie theCookie = new Cookie("sessionId", "fakeSessionID");
+
+        when(plantTrackerService.deletePlant("1", "fakeSessionID")).thenThrow(InvalidSessionException.class);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/plants/1")
+                .cookie(theCookie));
+
+        response.andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Test
+    public void PlantTrackerRestController_deletePlant_Throws404BadPlant() throws Exception{
+
+        Account theAccount = new Account("test", "password");
+
+        when(plantTrackerDAO.findAccount(ArgumentMatchers.any(Account.class))).thenReturn(theAccount);
+        Session theSession = new Session(theAccount, plantTrackerDAO);
+
+        when(plantTrackerDAO.findSessionBySessionID(ArgumentMatchers.any(String.class))).thenReturn(theSession);
+        Plant plant = new Plant(theSession.getSessionID(), plantTrackerDAO);
+
+        Cookie theCookie = new Cookie("sessionId", theSession.getSessionID());
+
+        when(plantTrackerService.deletePlant("1", theSession.getSessionID())).thenThrow(InvalidPlantException.class);
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/plants/1")
+                .cookie(theCookie));
+
+        response.andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
 
     //Tests for @PostMapping("/devices")
     //public ResponseEntity<HTTPResponseBody> registerDevice(@RequestBody Device theDevice)

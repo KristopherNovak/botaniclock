@@ -45,4 +45,28 @@ public class Device {
                 ", registrationID='" + registrationID + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o){
+        if(o == this) return true;
+        if(o == null) return false;
+        if(!o.getClass().equals(Device.class)) return false;
+
+        Device otherDevice = (Device) o;
+
+        if(!bothNullOrEqual(otherDevice.getAccountEmail(), this.accountEmail)) return false;
+        return bothNullOrEqual(otherDevice.getRegistrationID(), this.registrationID);
+
+    }
+
+    private boolean bothNullOrEqual(Object o1, Object o2){
+        if(o1 == null && o2 == null) return true;
+        if(o1 == null || o2 == null) return false;
+        return o1.equals(o2);
+    }
+
+    @Override
+    public int hashCode(){
+        return this.registrationID.hashCode() + this.accountEmail.hashCode()*31;
+    }
 }

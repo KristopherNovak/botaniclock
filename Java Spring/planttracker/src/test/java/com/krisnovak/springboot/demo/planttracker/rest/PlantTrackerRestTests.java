@@ -510,6 +510,58 @@ public class PlantTrackerRestTests {
 
     //Tests for @PostMapping("/devices")
     //public ResponseEntity<HTTPResponseBody> registerDevice(@RequestBody Device theDevice)
+    @Test
+    public void PlantTrackerRestController_registerDevice_ReturnsOKStatus() throws Exception{
+
+        Device theDevice = new Device();
+        theDevice.setAccountUsername("fakeAccountUsername");
+        theDevice.setRegistrationID("fakeRegistrationID");
+
+        doThrow(InvalidPlantException.class).when(plantTrackerService).confirmDeviceRegistration(AdditionalMatchers.not(ArgumentMatchers.eq(theDevice)));
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/devices")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(theDevice)));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void PlantTrackerRestController_registerDevice_Returns404BadUsername() throws Exception{
+
+        Device theDevice = new Device();
+        theDevice.setAccountUsername("fakeAccountUsername");
+        theDevice.setRegistrationID("fakeRegistrationID");
+
+        Device badDevice = new Device();
+        badDevice.setAccountUsername("badAccountUsername");
+        badDevice.setRegistrationID("fakeRegistrationID");
+
+        doThrow(InvalidPlantException.class).when(plantTrackerService).confirmDeviceRegistration(AdditionalMatchers.not(ArgumentMatchers.eq(theDevice)));
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/devices")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(badDevice)));
+
+        response.andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void PlantTrackerRestController_registerDevice_Returns404BadRegistrationID() throws Exception{
+
+        Device theDevice = new Device();
+        theDevice.setAccountUsername("fakeAccountUsername");
+        theDevice.setRegistrationID("fakeRegistrationID");
+
+        Device badDevice = new Device();
+        badDevice.setAccountUsername("fakeAccountUsername");
+        badDevice.setRegistrationID("badRegistrationID");
+
+        doThrow(InvalidPlantException.class).when(plantTrackerService).confirmDeviceRegistration(AdditionalMatchers.not(ArgumentMatchers.eq(theDevice)));
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/devices")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(badDevice)));
+
+        response.andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
 
     //Tests for @PutMapping("/devices") @Transactional
     //public ResponseEntity<HTTPResponseBody> updateTimestamp(@RequestBody Device theDevice)
